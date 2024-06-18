@@ -20,7 +20,7 @@ During runtime, the Simian frontend renders the defined web app directly from Py
 
     * `simian-local` allows running locally using pywebview
 
-    * `simian-examples` contains the examples available in this repository
+    * `simian-examples` contains the the same examples available in the `simian/examples` folder in this repository
 
     * `simian-builder` contains the builder
 
@@ -36,13 +36,15 @@ Example web apps are deployed at the [Simian Web Apps Demo portal](https://demo0
 
 #### Local
 
+For running apps locally, we assume that the `src` folder is on the Python path. The most straightforward way to achieve this, is to make it the current folder before running Python.
+
 * **All components**: this example contains all components that can be used in Simian GUI.
     ```
     import simian.local
     simian.local.Uiformio("simian.examples.all_components", window_title="All Components")
     ```
 
-* **Ball Thrower**: this example uses the `scipy.integrate.solve_ivp` solver to calculate the trajectory of a ball being thrown.
+* **Ball Thrower**: this example uses the `scipy.integrate.solve_ivp` solver to calculate the trajectory of a ball being thrown. Hence, the `scipy` package must be installed as a dependency.
     ```
     import simian.local
     simian.local.Uiformio("simian.examples.ballthrower", window_title="Ball Thrower")
