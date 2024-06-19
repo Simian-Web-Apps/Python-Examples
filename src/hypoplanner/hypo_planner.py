@@ -19,7 +19,7 @@ from simian.local import Uiformio
 
 if __name__ == "__main__":
     print(os.getcwd())
-    Uiformio("hypo_planner", window_title="MonkeyProof Solutions", show_refresh=True)
+    Uiformio("hypo_planner", window_title="MonkeyProof Solutions")
 
 
 def gui_init(meta_data: dict) -> dict:
