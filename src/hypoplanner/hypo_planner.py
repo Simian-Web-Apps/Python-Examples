@@ -185,6 +185,7 @@ def init_app_toplevel_pic(comp: component.HtmlElement):
     comp.setLocalImage(
         os.path.join(os.path.dirname(__file__), "app_pic.png"), scale_to_parent_width=True
     )
+    comp.customClass = "px-5"
 
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
