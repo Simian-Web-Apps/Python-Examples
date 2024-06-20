@@ -15,18 +15,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from simian.gui import Form, component, utils
-from simian.local import Uiformio
 
 if __name__ == "__main__":
-    print(os.getcwd())
+    from simian.local import Uiformio
     Uiformio("hypo_planner", window_title="MonkeyProof Solutions")
 
 
 def gui_init(meta_data: dict) -> dict:
     # Create the form and load the json builder into it.
-    Form.componentInitializer(app_pic_left_hypo_planner=init_app_toplevel_pic_left)
-    Form.componentInitializer(app_pic_center_hypo_planner=init_app_toplevel_pic_center)
-    Form.componentInitializer(app_pic_right_hypo_planner=init_app_toplevel_pic_right)
+    Form.componentInitializer(app_pic_hypo_planner=init_app_toplevel_pic)
     Form.componentInitializer(periode_selector=init_periode_selector)
     Form.componentInitializer(hypo_verloop_table_report=init_hypo_verloop_table_report)
     Form.componentInitializer(plot_verloop_lasten=init_plot_verloop_lasten)
@@ -182,25 +179,12 @@ def init_hypo_verloop_table_report(comp: component.DataTables):
     ]
 
 
-def init_app_toplevel_pic_left(comp: component.HtmlElement):
-    # Voeg depictie toe in de linker bovenhoek.
+def init_app_toplevel_pic(comp: component.HtmlElement):
+    # Voeg depictie met titel toe in de linker bovenhoek.
     comp.setLocalImage(
-        os.path.join(os.path.dirname(__file__), "app_pic_left.png"), scale_to_parent_width=True
+        os.path.join(os.path.dirname(__file__), "app_pic.png"), scale_to_parent_width=True
     )
-
-
-def init_app_toplevel_pic_center(comp: component.HtmlElement):
-    # Voeg titel toe, gecentreerd bovenin.
-    comp.setLocalImage(
-        os.path.join(os.path.dirname(__file__), "app_pic_center.png"), scale_to_parent_width=True
-    )
-
-
-def init_app_toplevel_pic_right(comp: component.HtmlElement):
-    # Voeg depictie toe in de rechter bovenhoek.
-    comp.setLocalImage(
-        os.path.join(os.path.dirname(__file__), "app_pic_right.png"), scale_to_parent_width=True
-    )
+    comp.customClass = "px-5"
 
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
