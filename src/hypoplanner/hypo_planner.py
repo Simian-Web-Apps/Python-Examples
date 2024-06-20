@@ -15,10 +15,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from simian.gui import Form, component, utils
-from simian.local import Uiformio
 
 if __name__ == "__main__":
-    print(os.getcwd())
+    from simian.local import Uiformio
     Uiformio("hypo_planner", window_title="MonkeyProof Solutions")
 
 
