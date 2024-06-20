@@ -57,6 +57,12 @@ For running apps locally, we assume that the `src` folder is on the Python path.
     simian.local.Uiformio("simian.examples.plottypes", window_title="Plot Types")
     ```
 
+* **Hypotheek planner**: this example is an (indicative) mortgage planner. Available in Dutch only.
+    ```
+    import simian.local
+    simian.local.Uiformio("hypoplanner.hypo_planner", window_title="Hypotheek Planner")
+    ```
+
 ### Running Builder
 
 * Start the Builder by running

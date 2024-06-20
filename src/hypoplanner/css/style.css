@@ -1,0 +1,32 @@
+html {
+    /* Overall scaling */
+    font-size: 0.9rem;
+}
+
+.card-body {
+    /* Padding in panels and tabs. */
+    padding: 0.5rem;
+}
+
+.container-fluid {
+    /* Top-level form padding. */
+    padding: 0.5rem;
+}
+
+.form-group {
+    /* Distance between controls (rows) */
+    margin-bottom: 0.5rem;
+}
+
+.dialog:not(.formio-hidden) {
+    position: fixed;
+    z-index: 1020;
+    width: 100%;
+    height: 100%;
+    padding: 10%;
+    background: #00000066;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
