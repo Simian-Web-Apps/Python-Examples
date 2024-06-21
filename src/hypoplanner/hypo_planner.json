@@ -157,6 +157,27 @@
                                     "delimiter": true
                                 },
                                 {
+                                    "label": "Eigen middelen",
+                                    "labelPosition": "left-left",
+                                    "tooltip": "Inbreng van eigen middelen zoals spaargeld of overwaarde",
+                                    "applyMaskOn": "change",
+                                    "mask": false,
+                                    "spellcheck": true,
+                                    "tableView": false,
+                                    "defaultValue": 20000,
+                                    "currency": "EUR",
+                                    "inputFormat": "plain",
+                                    "truncateMultipleSpaces": false,
+                                    "validate": {
+                                        "custom": "valid = (input > 14999) ? true : 'Minimum eigen inbreng is 5.000 Euro';"
+                                    },
+                                    "key": "eigen_middelen",
+                                    "type": "currency",
+                                    "labelWidth": 50,
+                                    "input": true,
+                                    "delimiter": true
+                                },
+                                {
                                     "label": "Overdrachtsbelasting",
                                     "labelPosition": "left-left",
                                     "tooltip": "Overdrachtsbelasting op basis van de koopsom",
@@ -193,55 +214,133 @@
                                     "delimiter": true
                                 },
                                 {
-                                    "title": "<b>Hypotheeksom</b>",
-                                    "collapsible": false,
-                                    "key": "hypotheeksom",
+                                    "label": "<b>Benodigde hypotheek</b>",
+                                    "labelPosition": "left-left",
+                                    "tooltip": "Benodigde hypotheeksom",
+                                    "applyMaskOn": "change",
+                                    "mask": false,
+                                    "spellcheck": true,
+                                    "disabled": true,
+                                    "tableView": false,
+                                    "currency": "EUR",
+                                    "inputFormat": "plain",
+                                    "truncateMultipleSpaces": false,
+                                    "key": "hypo_benodigd",
+                                    "customConditional": "if (instance.element) {\n  if (data.hypo_benodigd > data.koopsom) {\n    instance.element.classList.add('custom-error');\n  } else {\n    instance.element.classList.remove('custom-error');\n  }\n}\nshow = true;",
+                                    "type": "currency",
+                                    "labelWidth": 50,
+                                    "input": true,
+                                    "delimiter": true
+                                },
+                                {
+                                    "title": "Fiscale gegevens",
+                                    "collapsible": true,
+                                    "key": "fiscaleGegevens",
                                     "type": "panel",
                                     "label": "Panel",
                                     "input": false,
                                     "tableView": false,
                                     "components": [
                                         {
-                                            "label": "Eigen middelen",
+                                            "label": "OB",
                                             "labelPosition": "left-left",
-                                            "tooltip": "Inbreng van eigen middelen zoals spaargeld of overwaarde",
+                                            "tooltip": "De overdrachtsbelasting is een vast percentage van de koopsom",
+                                            "suffix": "%",
                                             "applyMaskOn": "change",
                                             "mask": false,
-                                            "spellcheck": true,
+                                            "disabled": true,
                                             "tableView": false,
-                                            "defaultValue": 20000,
-                                            "currency": "EUR",
+                                            "defaultValue": 2,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "key": "perc_overdrachtsbelasting",
+                                            "type": "number",
+                                            "labelWidth": 50,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Forfait EW",
+                                            "labelPosition": "left-left",
+                                            "tooltip": "Eigenwoningforfait voor woningen met een WOZ waarde tussen \u20ac 75.000 en \u20ac 1.310.000 [2024]",
+                                            "suffix": "%",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "disabled": true,
+                                            "tableView": false,
+                                            "defaultValue": 0.35,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "key": "perc_forfait",
+                                            "type": "number",
+                                            "labelWidth": 50,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Tarief VT",
+                                            "labelPosition": "left-left",
+                                            "tooltip": "Hoogste belastingschijf voor aftrek van de hypotheekrente beperkt tot 36,97% [2024]",
+                                            "suffix": "%",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "disabled": true,
+                                            "tableView": false,
+                                            "defaultValue": 36.97,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "key": "perc_voorlopigeteruggaaf",
+                                            "type": "number",
+                                            "labelWidth": 50,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Inflatie WOZ",
+                                            "labelPosition": "left-left",
+                                            "tooltip": "Geschatte inflatie WOZ waarde. Belangrijk voor eigenwoningforfait en de afbouw van de Wet Hillen (tot 2048).",
+                                            "suffix": "%",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 1,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
                                             "inputFormat": "plain",
                                             "truncateMultipleSpaces": false,
                                             "validate": {
-                                                "custom": "valid = (input > 14999) ? true : 'Minimum eigen inbreng is 5.000 Euro';"
+                                                "min": 0,
+                                                "max": 5
                                             },
-                                            "key": "eigen_middelen",
-                                            "type": "currency",
+                                            "key": "perc_inflatie_woz",
+                                            "type": "number",
                                             "labelWidth": 50,
-                                            "input": true,
-                                            "delimiter": true
+                                            "input": true
                                         },
                                         {
-                                            "label": "Benodigd",
+                                            "label": "Tarief NHG",
                                             "labelPosition": "left-left",
-                                            "tooltip": "Benodigde hypotheeksom",
+                                            "tooltip": "Vast percentage van de hypotheeksom",
+                                            "suffix": "%",
                                             "applyMaskOn": "change",
                                             "mask": false,
-                                            "spellcheck": true,
                                             "disabled": true,
                                             "tableView": false,
-                                            "currency": "EUR",
+                                            "defaultValue": 0.6,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
                                             "inputFormat": "plain",
                                             "truncateMultipleSpaces": false,
-                                            "key": "hypo_benodigd",
-                                            "customConditional": "if (instance.element) {\n  if (data.hypo_benodigd > data.koopsom) {\n    instance.element.classList.add('custom-error');\n  } else {\n    instance.element.classList.remove('custom-error');\n  }\n}\nshow = true;",
-                                            "type": "currency",
+                                            "key": "perc_tarief_nhg",
+                                            "type": "number",
                                             "labelWidth": 50,
-                                            "input": true,
-                                            "delimiter": true
+                                            "input": true
                                         }
-                                    ]
+                                    ],
+                                    "collapsed": true
                                 }
                             ]
                         },
@@ -379,141 +478,77 @@
                                             }
                                         ]
                                     ]
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<b>3. Bereken je hypotheek</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "panel",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "<b>Bereken</b>",
+                                    "showValidations": false,
+                                    "theme": "warning",
+                                    "size": "sm",
+                                    "block": true,
+                                    "tableView": false,
+                                    "key": "calculate_button",
+                                    "type": "button",
+                                    "event": "calc_update",
+                                    "action": "event",
+                                    "input": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<b>Indicatie totale kosten over looptijd</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "totaleKosten",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "<b>Totaal bruto</b>",
+                                    "labelPosition": "left-left",
+                                    "applyMaskOn": "change",
+                                    "mask": false,
+                                    "spellcheck": true,
+                                    "disabled": true,
+                                    "tableView": false,
+                                    "currency": "EUR",
+                                    "inputFormat": "plain",
+                                    "truncateMultipleSpaces": false,
+                                    "key": "brutolast",
+                                    "type": "currency",
+                                    "labelWidth": 50,
+                                    "input": true,
+                                    "delimiter": true
                                 },
                                 {
-                                    "title": "Fiscale gegevens",
-                                    "collapsible": true,
-                                    "key": "fiscaleGegevens",
-                                    "type": "panel",
-                                    "label": "Panel",
-                                    "input": false,
+                                    "label": "<b>Totaal netto</b>",
+                                    "labelPosition": "left-left",
+                                    "applyMaskOn": "change",
+                                    "mask": false,
+                                    "spellcheck": true,
+                                    "disabled": true,
                                     "tableView": false,
-                                    "components": [
-                                        {
-                                            "label": "OB",
-                                            "labelPosition": "left-left",
-                                            "tooltip": "De overdrachtsbelasting is een vast percentage van de koopsom",
-                                            "suffix": "%",
-                                            "applyMaskOn": "change",
-                                            "mask": false,
-                                            "disabled": true,
-                                            "tableView": false,
-                                            "defaultValue": 2,
-                                            "delimiter": false,
-                                            "requireDecimal": false,
-                                            "inputFormat": "plain",
-                                            "truncateMultipleSpaces": false,
-                                            "key": "perc_overdrachtsbelasting",
-                                            "type": "number",
-                                            "labelWidth": 50,
-                                            "input": true
-                                        },
-                                        {
-                                            "label": "Forfait EW",
-                                            "labelPosition": "left-left",
-                                            "tooltip": "Eigenwoningforfait voor woningen met een WOZ waarde tussen \u20ac 75.000 en \u20ac 1.310.000 [2024]",
-                                            "suffix": "%",
-                                            "applyMaskOn": "change",
-                                            "mask": false,
-                                            "disabled": true,
-                                            "tableView": false,
-                                            "defaultValue": 0.35,
-                                            "delimiter": false,
-                                            "requireDecimal": false,
-                                            "inputFormat": "plain",
-                                            "truncateMultipleSpaces": false,
-                                            "key": "perc_forfait",
-                                            "type": "number",
-                                            "labelWidth": 50,
-                                            "input": true
-                                        },
-                                        {
-                                            "label": "Tarief VT",
-                                            "labelPosition": "left-left",
-                                            "tooltip": "Hoogste belastingschijf voor aftrek van de hypotheekrente beperkt tot 36,97% [2024]",
-                                            "suffix": "%",
-                                            "applyMaskOn": "change",
-                                            "mask": false,
-                                            "disabled": true,
-                                            "tableView": false,
-                                            "defaultValue": 36.97,
-                                            "delimiter": false,
-                                            "requireDecimal": false,
-                                            "inputFormat": "plain",
-                                            "truncateMultipleSpaces": false,
-                                            "key": "perc_voorlopigeteruggaaf",
-                                            "type": "number",
-                                            "labelWidth": 50,
-                                            "input": true
-                                        },
-                                        {
-                                            "label": "Inflatie WOZ",
-                                            "labelPosition": "left-left",
-                                            "tooltip": "Geschatte inflatie WOZ waarde. Belangrijk voor eigenwoningforfait en de afbouw van de Wet Hillen (tot 2048).",
-                                            "suffix": "%",
-                                            "applyMaskOn": "change",
-                                            "mask": false,
-                                            "tableView": false,
-                                            "defaultValue": 1,
-                                            "delimiter": false,
-                                            "requireDecimal": false,
-                                            "inputFormat": "plain",
-                                            "truncateMultipleSpaces": false,
-                                            "validate": {
-                                                "min": 0,
-                                                "max": 5
-                                            },
-                                            "key": "perc_inflatie_woz",
-                                            "type": "number",
-                                            "labelWidth": 50,
-                                            "input": true
-                                        },
-                                        {
-                                            "label": "Tarief NHG",
-                                            "labelPosition": "left-left",
-                                            "tooltip": "Vast percentage van de hypotheeksom",
-                                            "suffix": "%",
-                                            "applyMaskOn": "change",
-                                            "mask": false,
-                                            "disabled": true,
-                                            "tableView": false,
-                                            "defaultValue": 0.6,
-                                            "delimiter": false,
-                                            "requireDecimal": false,
-                                            "inputFormat": "plain",
-                                            "truncateMultipleSpaces": false,
-                                            "key": "perc_tarief_nhg",
-                                            "type": "number",
-                                            "labelWidth": 50,
-                                            "input": true
-                                        }
-                                    ],
-                                    "collapsed": true
-                                },
-                                {
-                                    "title": "<b>3. Bereken je hypotheek</b>",
-                                    "theme": "info",
-                                    "collapsible": false,
-                                    "key": "panel",
-                                    "type": "panel",
-                                    "label": "Panel",
-                                    "input": false,
-                                    "tableView": false,
-                                    "components": [
-                                        {
-                                            "label": "<b>BEREKEN</b>",
-                                            "showValidations": false,
-                                            "theme": "warning",
-                                            "size": "sm",
-                                            "block": true,
-                                            "tableView": false,
-                                            "key": "calculate_button",
-                                            "type": "button",
-                                            "event": "calc_update",
-                                            "action": "event",
-                                            "input": true
-                                        }
-                                    ]
+                                    "currency": "EUR",
+                                    "inputFormat": "plain",
+                                    "truncateMultipleSpaces": false,
+                                    "key": "nettolast",
+                                    "type": "currency",
+                                    "labelWidth": 50,
+                                    "input": true,
+                                    "delimiter": true
                                 }
                             ]
                         }
@@ -729,74 +764,6 @@
                                     "type": "columns",
                                     "input": false,
                                     "tableView": false
-                                }
-                            ]
-                        },
-                        {
-                            "title": "<b>Indicatie totale kosten over looptijd</b>",
-                            "theme": "info",
-                            "collapsible": false,
-                            "key": "totaleKosten",
-                            "type": "panel",
-                            "label": "Panel",
-                            "input": false,
-                            "tableView": false,
-                            "components": [
-                                {
-                                    "label": "Table",
-                                    "cellAlignment": "left",
-                                    "key": "tablecomp",
-                                    "type": "table",
-                                    "numRows": 1,
-                                    "numCols": 2,
-                                    "input": false,
-                                    "tableView": false,
-                                    "rows": [
-                                        [
-                                            {
-                                                "components": [
-                                                    {
-                                                        "label": "<b>Totaal bruto</b>",
-                                                        "labelPosition": "left-left",
-                                                        "applyMaskOn": "change",
-                                                        "mask": false,
-                                                        "spellcheck": true,
-                                                        "disabled": true,
-                                                        "tableView": false,
-                                                        "currency": "EUR",
-                                                        "inputFormat": "plain",
-                                                        "truncateMultipleSpaces": false,
-                                                        "key": "brutolast",
-                                                        "type": "currency",
-                                                        "labelWidth": 50,
-                                                        "input": true,
-                                                        "delimiter": true
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "components": [
-                                                    {
-                                                        "label": "<b>Totaal netto</b>",
-                                                        "labelPosition": "left-left",
-                                                        "applyMaskOn": "change",
-                                                        "mask": false,
-                                                        "spellcheck": true,
-                                                        "disabled": true,
-                                                        "tableView": false,
-                                                        "currency": "EUR",
-                                                        "inputFormat": "plain",
-                                                        "truncateMultipleSpaces": false,
-                                                        "key": "nettolast",
-                                                        "type": "currency",
-                                                        "labelWidth": 50,
-                                                        "input": true,
-                                                        "delimiter": true
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    ]
                                 }
                             ]
                         },
