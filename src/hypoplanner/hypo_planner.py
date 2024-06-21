@@ -37,8 +37,7 @@ def gui_init(meta_data: dict) -> dict:
 
 def init_periode_selector(comp: component.Slider):
     # Define a TriggerHappy event, to immediately process period selections.
-    comp.properties = {"triggerHappy": True, "debounceTime": 1000}
-    comp.properties = {"triggerHappy": "update_period_selection"}
+    comp.properties = {"triggerHappy": "update_period_selection", "debounceTime": 1000}
 
 
 def init_hypo_verloop_table():
