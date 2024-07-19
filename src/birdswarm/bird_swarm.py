@@ -43,7 +43,6 @@ def gui_init(meta_data: dict) -> dict:
                 '<i class="fa fa-github"></i></a>&nbsp;Data Science Demo: Particle Swarm Optimization'
             )
         },
-        "showChanged": True,
     }
 
     return payload
