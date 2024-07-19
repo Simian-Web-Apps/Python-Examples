@@ -45,23 +45,39 @@ For running apps locally, we assume that the `src` folder is on the Python path.
     ```
 
 * **Ball Thrower**: this example uses the `scipy.integrate.solve_ivp` solver to calculate the trajectory of a ball being thrown. Hence, the `scipy` package must be installed as a dependency.
-    ```
-    import simian.local
-    simian.local.Uiformio("simian.examples.ballthrower", window_title="Ball Thrower")
+    ```python
+    from simian.local import Uiformio
+    Uiformio("simian.examples.ballthrower", window_title="Ball Thrower")
     ```
     See [Example](https://doc.simiansuite.com/simian-gui/example.html) in the documentation for more details.
 
 * **Plot types**: this example showcases the Plotly integration in Simian GUI.
-    ```
-    import simian.local
-    simian.local.Uiformio("simian.examples.plottypes", window_title="Plot Types")
+    ```python
+    from simian.local import Uiformio
+    Uiformio("simian.examples.plottypes", window_title="Plot Types")
     ```
 
 * **Hypotheek planner**: this example is an (indicative) mortgage planner. Available in Dutch only.
+    ```python
+    from simian.local import Uiformio
+    Uiformio("hypoplanner.hypo_planner", window_title="Hypotheek Planner")
     ```
-    import simian.local
-    simian.local.Uiformio("hypoplanner.hypo_planner", window_title="Hypotheek Planner")
-    ```
+
+* **Bird swarm**: this example uses a particle swarm optimization to simulate bird feeding behavior.
+    * Install additional dependencies
+        ```
+        pip install cython setuptools matplotlib scipy noise
+        ```
+    * Use Cython to build the `.pyx` modules
+        ```
+        cd birdswarm
+        python setup.py build_ext --inplace
+        ```
+    * Run the application
+        ```python
+        from simian.local import Uiformio
+        Uiformio("birdswarm.bird_swarm", window_title="Bird Swarm")
+        ```
 
 ### Running Builder
 
