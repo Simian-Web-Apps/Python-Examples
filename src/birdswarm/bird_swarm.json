@@ -1,0 +1,670 @@
+{
+    "components": [
+        {
+            "label": "Bird Swarm Food Frenzy",
+            "columns": [
+                {
+                    "components": [
+                        {
+                            "label": "HTML",
+                            "tag": "birdSwarmPic",
+                            "attrs": [
+                                {
+                                    "attr": "",
+                                    "value": ""
+                                }
+                            ],
+                            "refreshOnChange": false,
+                            "key": "app_pic_bird_food_frenzy",
+                            "type": "htmlelement",
+                            "input": false,
+                            "tableView": false
+                        },
+                        {
+                            "title": "<b>1. Generate terrain</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "kiesJeHypotheek",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "placeholder2",
+                                    "hideLabel": true,
+                                    "key": "placeholder2",
+                                    "type": "well",
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "<b>Build landscape</b>",
+                                            "showValidations": false,
+                                            "theme": "warning",
+                                            "size": "sm",
+                                            "block": true,
+                                            "tableView": false,
+                                            "key": "initialize_landscape_button",
+                                            "type": "button",
+                                            "event": "initiate_landscape",
+                                            "action": "event",
+                                            "input": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": "Advanced options",
+                                    "collapsible": true,
+                                    "key": "panel",
+                                    "type": "panel",
+                                    "label": "Panel",
+                                    "collapsed": true,
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "Map size",
+                                            "labelPosition": "left-left",
+                                            "suffix": "[m]",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 1024,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 512,
+                                                "max": 2048
+                                            },
+                                            "key": "map_size",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Seed",
+                                            "labelPosition": "left-left",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 250,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 10,
+                                                "max": 1000
+                                            },
+                                            "key": "seed",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Octaves",
+                                            "labelPosition": "left-left",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 2,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 1,
+                                                "max": 10
+                                            },
+                                            "key": "octaves",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Scale",
+                                            "labelPosition": "left-left",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 450,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 64,
+                                                "max": 1024
+                                            },
+                                            "key": "scale",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Expo",
+                                            "labelPosition": "left-left",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 1.7,
+                                            "delimiter": false,
+                                            "requireDecimal": true,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 1,
+                                                "max": 10
+                                            },
+                                            "key": "expo",
+                                            "type": "number",
+                                            "decimalLimit": 1,
+                                            "input": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<b>2. Train the swarm!</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "kiesJeHypotheekvorm",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "Try autotuning to get an idea",
+                                    "hideLabel": true,
+                                    "key": "placeholder3",
+                                    "type": "well",
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "Experience the calibration with Autotuning first, then try it yourself without.",
+                                            "labelPosition": "left-left",
+                                            "leftLabel": "Manual",
+                                            "rightLabel": "Auto",
+                                            "tableView": false,
+                                            "defaultValue": true,
+                                            "key": "toggle_autotuning",
+                                            "type": "customtoggle",
+                                            "input": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "Train the swarm!",
+                                    "cellAlignment": "center",
+                                    "condensed": true,
+                                    "hideLabel": true,
+                                    "key": "table",
+                                    "type": "table",
+                                    "numCols": 2,
+                                    "input": false,
+                                    "tableView": false,
+                                    "rows": [
+                                        [
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Cognitive<br>weight factor: <b>[c1]</b>",
+                                                        "tableView": false,
+                                                        "defaultValue": 4,
+                                                        "min": 0,
+                                                        "max": 4,
+                                                        "step": 0.05,
+                                                        "key": "cognitive_weight",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Social<br>weight factor: <b>[c2]</b>",
+                                                        "tableView": false,
+                                                        "defaultValue": 0,
+                                                        "min": 0,
+                                                        "max": 4,
+                                                        "step": 0.05,
+                                                        "key": "social_weight",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        [
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Random exploration<br>weight factor: <b>[r]</b>",
+                                                        "tableView": false,
+                                                        "defaultValue": 2,
+                                                        "min": 0,
+                                                        "max": 4,
+                                                        "step": 0.05,
+                                                        "key": "random_weight",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Bird inertia<br>factor <b>[w]</b>",
+                                                        "tableView": false,
+                                                        "defaultValue": 0.95,
+                                                        "min": 0.5,
+                                                        "max": 0.95,
+                                                        "step": 0.05,
+                                                        "key": "omega",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        [
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Maximum<br>birdspeed: <b>[km/h]</b>",
+                                                        "tableView": false,
+                                                        "defaultValue": 55,
+                                                        "min": 25,
+                                                        "max": 65,
+                                                        "step": 1,
+                                                        "key": "max_birdspeed",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "label": "Maximum<br>iterations:",
+                                                        "tableView": false,
+                                                        "defaultValue": 1000,
+                                                        "min": 500,
+                                                        "max": 1500,
+                                                        "step": 10,
+                                                        "key": "max_iterations",
+                                                        "type": "customslider",
+                                                        "input": true
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "label": "placeholder1",
+                                    "hideLabel": true,
+                                    "key": "placeholder1",
+                                    "type": "well",
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "<b>Animate</b>",
+                                            "showValidations": false,
+                                            "theme": "warning",
+                                            "size": "sm",
+                                            "block": true,
+                                            "tableView": false,
+                                            "key": "calculate_button",
+                                            "type": "button",
+                                            "event": "calc_update",
+                                            "action": "event",
+                                            "input": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": "Advanced options",
+                                    "collapsible": true,
+                                    "key": "advancedOptions",
+                                    "type": "panel",
+                                    "label": "Panel",
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "Animation caption rate",
+                                            "labelPosition": "left-left",
+                                            "tooltip": "Rate of image-capturing, to build the animation.",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 20,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 5,
+                                                "max": 50
+                                            },
+                                            "key": "caption_rate",
+                                            "type": "number",
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Frames per second",
+                                            "labelPosition": "left-left",
+                                            "tooltip": "Define depiction time for each captured frame.",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 4,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 1,
+                                                "max": 25
+                                            },
+                                            "key": "frames_per_second",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Bird count",
+                                            "labelPosition": "left-left",
+                                            "applyMaskOn": "change",
+                                            "mask": false,
+                                            "tableView": false,
+                                            "defaultValue": 250,
+                                            "delimiter": false,
+                                            "requireDecimal": false,
+                                            "inputFormat": "plain",
+                                            "truncateMultipleSpaces": false,
+                                            "validate": {
+                                                "min": 200,
+                                                "max": 500
+                                            },
+                                            "key": "particles",
+                                            "type": "number",
+                                            "decimalLimit": 0,
+                                            "input": true
+                                        }
+                                    ],
+                                    "collapsed": true
+                                }
+                            ]
+                        }
+                    ],
+                    "width": 3,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md",
+                    "currentWidth": 3
+                },
+                {
+                    "components": [
+                        {
+                            "title": "<b>Swarm animation</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "kostenverloop",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "Image",
+                                    "key": "image",
+                                    "type": "hidden",
+                                    "input": true,
+                                    "tableView": false
+                                },
+                                {
+                                    "label": "HTML_element_animation",
+                                    "tag": "div",
+                                    "attrs": [
+                                        {
+                                            "attr": "",
+                                            "value": ""
+                                        }
+                                    ],
+                                    "content": "<img src=\"{{data.image}}\" class=\"w-100\" />",
+                                    "refreshOnChange": true,
+                                    "key": "html_element_animation",
+                                    "type": "htmlelement",
+                                    "input": false,
+                                    "tableView": false
+                                },
+                                {
+                                    "label": "Columns",
+                                    "columns": [
+                                        {
+                                            "components": [
+                                                {
+                                                    "title": "Info",
+                                                    "theme": "info",
+                                                    "collapsible": false,
+                                                    "key": "info",
+                                                    "type": "panel",
+                                                    "label": "Panel",
+                                                    "input": false,
+                                                    "tableView": false,
+                                                    "components": [
+                                                        {
+                                                            "label": "label_description",
+                                                            "attrs": [
+                                                                {
+                                                                    "attr": "",
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "content": "Help the swarm to find the food, located at the highest point. Tweak cognitive and social behavior, and tune inertia and speed.<br><br>A random/autonomous exploration factor is added to the methodology, to better probe and study individual bird behavior [factor <b>r</b>].<br><br>\n<a href=\"https://towardsdatascience.com/particle-swarm-optimization-visually-explained-46289eeb2e14\" target=\"_blank\"><i class=\"fa fa-globe\"></i> Source: Particle swarm optimization methodology</a>",
+                                                            "refreshOnChange": false,
+                                                            "key": "html",
+                                                            "type": "htmlelement",
+                                                            "input": false,
+                                                            "tableView": false
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "width": 6,
+                                            "offset": 0,
+                                            "push": 0,
+                                            "pull": 0,
+                                            "size": "md",
+                                            "currentWidth": 6
+                                        },
+                                        {
+                                            "components": [
+                                                {
+                                                    "title": "Position and velocity equations",
+                                                    "theme": "info",
+                                                    "collapsible": false,
+                                                    "key": "positionAndVelocityEquations",
+                                                    "type": "panel",
+                                                    "label": "Panel",
+                                                    "input": false,
+                                                    "tableView": false,
+                                                    "components": [
+                                                        {
+                                                            "label": "HTML",
+                                                            "tag": "birdSwarmPic",
+                                                            "attrs": [
+                                                                {
+                                                                    "attr": "",
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "refreshOnChange": false,
+                                                            "key": "pso_pic_methodology",
+                                                            "type": "htmlelement",
+                                                            "input": false,
+                                                            "tableView": false
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "label": "terrain_elevation_map",
+                                                    "key": "terrain_elevation_map",
+                                                    "type": "hidden",
+                                                    "input": true,
+                                                    "tableView": false
+                                                },
+                                                {
+                                                    "label": "hold_submission_data",
+                                                    "key": "hold_submission_data",
+                                                    "type": "hidden",
+                                                    "input": true,
+                                                    "tableView": false
+                                                }
+                                            ],
+                                            "width": 6,
+                                            "offset": 0,
+                                            "push": 0,
+                                            "pull": 0,
+                                            "size": "md",
+                                            "currentWidth": 6
+                                        }
+                                    ],
+                                    "hideLabel": true,
+                                    "key": "columns",
+                                    "type": "columns",
+                                    "input": false,
+                                    "tableView": false
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<b>Session management</b>",
+                            "theme": "info",
+                            "collapsible": false,
+                            "key": "sessionManagement",
+                            "type": "panel",
+                            "label": "Panel",
+                            "input": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "label": "Columns",
+                                    "columns": [
+                                        {
+                                            "components": [
+                                                {
+                                                    "label": "Table",
+                                                    "cellAlignment": "left",
+                                                    "hideLabel": true,
+                                                    "key": "table2",
+                                                    "type": "table",
+                                                    "numRows": 1,
+                                                    "input": false,
+                                                    "tableView": false,
+                                                    "rows": [
+                                                        [
+                                                            {
+                                                                "components": [
+                                                                    {
+                                                                        "label": "Hold",
+                                                                        "showValidations": false,
+                                                                        "block": true,
+                                                                        "tooltip": "Hold current swarm behavior settings",
+                                                                        "tableView": false,
+                                                                        "key": "capture_hold_scenario",
+                                                                        "type": "button",
+                                                                        "event": "capture_hold_scenario",
+                                                                        "action": "event",
+                                                                        "input": true
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "components": [
+                                                                    {
+                                                                        "label": "Reset",
+                                                                        "showValidations": false,
+                                                                        "block": true,
+                                                                        "tooltip": "Delete stored swarm behavior settings.",
+                                                                        "tableView": false,
+                                                                        "key": "clear_hold_scenario",
+                                                                        "type": "button",
+                                                                        "event": "clear_hold_scenario",
+                                                                        "action": "event",
+                                                                        "input": true
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "components": [
+                                                                    {
+                                                                        "label": "Restore",
+                                                                        "showValidations": false,
+                                                                        "block": true,
+                                                                        "tooltip": "Revert to the stored swarm behavior settings.",
+                                                                        "tableView": false,
+                                                                        "key": "restore_hold_scenario",
+                                                                        "type": "button",
+                                                                        "event": "restore_hold_scenario",
+                                                                        "action": "event",
+                                                                        "input": true
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    ]
+                                                }
+                                            ],
+                                            "width": 6,
+                                            "offset": 0,
+                                            "push": 0,
+                                            "pull": 0,
+                                            "size": "md",
+                                            "currentWidth": 6
+                                        },
+                                        {
+                                            "components": [],
+                                            "width": 6,
+                                            "offset": 0,
+                                            "push": 0,
+                                            "pull": 0,
+                                            "size": "md",
+                                            "currentWidth": 6
+                                        }
+                                    ],
+                                    "hideLabel": true,
+                                    "key": "columns1",
+                                    "type": "columns",
+                                    "input": false,
+                                    "tableView": false
+                                }
+                            ]
+                        }
+                    ],
+                    "width": 9,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md",
+                    "currentWidth": 9
+                }
+            ],
+            "key": "Hypotheekplanner",
+            "type": "columns",
+            "input": false,
+            "tableView": false
+        }
+    ]
+}
