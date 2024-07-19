@@ -18,21 +18,12 @@ import os
 import time
 from io import BytesIO
 
-import heightmap
 import matplotlib.pyplot as plt
 import numpy as np
-import swarm_animation
-from pso_method import PSO
+from birdswarm import heightmap, pso_utils, swarm_animation
+from birdswarm.pso_method import PSO
 from scipy.interpolate import RegularGridInterpolator
 from simian.gui import Form, component, utils
-
-import pso_utils
-
-if __name__ == "__main__":
-    from simian.local import Uiformio
-
-    # Initiate application.
-    Uiformio("bird_swarm", window_title="MonkeyProof Solutions")
 
 
 def gui_init(meta_data: dict) -> dict:
