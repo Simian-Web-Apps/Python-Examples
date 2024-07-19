@@ -33,8 +33,20 @@ def gui_init(meta_data: dict) -> dict:
     Form.componentInitializer(image=set_default_image)
 
     form = Form(from_file=__file__)
+    examples_url = "https://github.com/Simian-Web-Apps/Python-Examples/"
 
-    return {"form": form, "navbar": {"title": "Data Science Demo: Particle Swarm Optimization"}}
+    payload = {
+        "form": form,
+        "navbar": {
+            "title": (
+                f'<a class="text-white" href="{examples_url}" target="_blank">'
+                '<i class="fa fa-github"></i></a>&nbsp;Data Science Demo: Particle Swarm Optimization'
+            )
+        },
+        "showChanged": True,
+    }
+
+    return payload
 
 
 def init_app_toplevel_pic(comp: component.HtmlElement):

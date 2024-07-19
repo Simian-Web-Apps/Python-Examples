@@ -465,13 +465,19 @@
                                                     "tableView": false,
                                                     "components": [
                                                         {
-                                                            "label": "Help the swarm to find the food, located at the highest point. Tweak cognitive and social behavior, and tune inertia and speed.<br><br>A random/autonomous exploration factor is added to the methodology, to better probe and study individual bird behavior [factor <b>r</b>].<br><br><i>Source</i>: Particle swarm optimization methodology",
-                                                            "applyMaskOn": "change",
-                                                            "tableView": true,
-                                                            "defaultValue": "https://towardsdatascience.com/particle-swarm-optimization-visually-explained-46289eeb2e14",
-                                                            "key": "url",
-                                                            "type": "url",
-                                                            "input": true
+                                                            "label": "label_description",
+                                                            "attrs": [
+                                                                {
+                                                                    "attr": "",
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "content": "Help the swarm to find the food, located at the highest point. Tweak cognitive and social behavior, and tune inertia and speed.<br><br>A random/autonomous exploration factor is added to the methodology, to better probe and study individual bird behavior [factor <b>r</b>].<br><br>\n<a href=\"https://towardsdatascience.com/particle-swarm-optimization-visually-explained-46289eeb2e14\" target=\"_blank\"><i class=\"fa fa-globe\"></i> Source: Particle swarm optimization methodology</a>",
+                                                            "refreshOnChange": false,
+                                                            "key": "html",
+                                                            "type": "htmlelement",
+                                                            "input": false,
+                                                            "tableView": false
                                                         }
                                                     ]
                                                 }
