@@ -77,8 +77,9 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         ```
 
 * **Route planner**: this example uses openstreetmap and openrouteservice for displaying maps and routes.
-    * For local usage create an free https://openrouteservice.org/ account [here](https://openrouteservice.org/dev/#/signup) and get your API key (token).
-    * Copy the `local_application_data.json.sample` to `local_application_data.json` and store your API key (token) in `local_application_data.json`.
+    * For local usage create an free `openrouteservice.org` account [here](https://openrouteservice.org/dev/#/signup), and get your API key (token).
+    * Copy the `local_application_data.json.sample` to `local_application_data.json`.
+    * Store your API key (token) in `local_application_data.json`.
     * Run the application
       ```
       python -m run routeplanner.route_planner.py
