@@ -5,6 +5,6 @@ Copy the `local_settings.json.sample` to `local_settings.json` and store your AP
 
 Make sure that simian-gui is installed (see `requirements.txt`).
 
-To start the application run `route_planner_py`.
+To start the application run `route_planner.py`.
 
 Note that the app uses truck images from `https://downloads.simiansuite.com` so Python should have access to that server.
