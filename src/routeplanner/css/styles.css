@@ -1,0 +1,39 @@
+plotly-custom {
+  min-width: 600px;
+}
+
+html, body {
+  margin: 0;
+  height: 100vh;
+}
+
+.route-planner-select-truck-img {
+  height: 1.5em;
+}
+
+.route-planner-data-grid {
+  thead, tbody {
+    word-break: normal;
+  }
+  th:first-child, td:first-child {
+    width: 2em;
+  }
+  th:nth-child(1n+2), td:nth-child(1n+2) {
+    min-width: 7em;
+  }
+  input {
+    text-align: right;
+    background-color: white !important;
+    border: none;
+  }
+}
+
+.route-planner-truck-property-table {
+  td:first-child {
+    width: 60%;
+  }
+  td:nth-child(2) {
+    width: 40%;
+    text-align: right;
+  }
+}
