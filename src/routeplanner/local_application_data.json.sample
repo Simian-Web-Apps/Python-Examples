@@ -1,0 +1,4 @@
+{
+    "truck_image_base_url": "https://downloads.simiansuite.com/demo-static-content/route-planner/images/",
+    "open_route_service_api_key": "YOUR_OPENROUTESERVICE_DOT_ORG_API_KEY_HERE"
+}
