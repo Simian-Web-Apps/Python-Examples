@@ -1,16 +1,10 @@
-# Azure 
-## settings
+# EV Truck route "planner"
+For local usage create an free https://openrouteservice.org/ account [here](https://openrouteservice.org/dev/#/signup) and get your API key (token).
 
-slug - within portal
+Copy the `local_settings.json.sample` to `local_settings.json` and store your API key (token) in `local_settings.json`.
 
-Function App - relevant function - deployment center - overview - <name of trigger> - Get Function URL
+Make sure that simian-gui is installed (see `requirements.txt`).
 
+To start the application run `route_planner_py`.
 
-## Install
-
-* install Azure Functions plugin
-* logout/login in case subscription changes after login - refresh does not pick this up apperently
-* Azure Functions Core Tools needed for local debugging of created functions
-  * https://github.com/Azure/azure-functions-core-tools#installing
-* Azurite extension
-* follow instructions from: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-vs-code-python?pivots=python-mode-decorators
+Note that the app uses truck images from `https://downloads.simiansuite.com` so Python should have access to that server.
