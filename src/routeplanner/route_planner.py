@@ -171,7 +171,7 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                             waypoint["legDistance"] = 0
                             waypoint["totalDistance"] = 0
                             waypoint["chargeStops"] = 0
-                        elif waypoints[idx - 1]["select_city"] and waypoint["select_city"]:
+                        else:
                             waypoint["legDistance"] = (
                                 route["features"][0]["properties"]["segments"][idx - 1]["distance"]
                                 / 1000
@@ -182,10 +182,6 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                             waypoint["chargeStops"] = waypoints[idx - 1]["chargeStops"] + math.ceil(
                                 waypoint["legDistance"] / range
                             )
-                        else:
-                            waypoint["legDistance"] = 0
-                            waypoint["totalDistance"] = waypoints[idx - 1]["totalDistance"]
-                            waypoint["chargeStops"] = 0
 
                     # Update the payload with the waypoint info.
                     payload, _ = utils.setSubmissionData(payload, "waypoints", waypoints)
