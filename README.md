@@ -78,8 +78,8 @@ For running apps locally, we assume that the `src` folder is on the Python path.
 
 * **Route planner**: this example uses openstreetmap.org, openrouteservice.org, and here.com for maps, routes, and destinations.
 
-    * [Create a (free) https://openrouteservice.org/ account](https://openrouteservice.org/dev/#/signup) and get your API key (token).
-    * [Create a (free) https://here.com/ account](https://platform.here.com/portal/) and get your API key. 
+    * Create a (free) [openrouteservice.org](https://openrouteservice.org/dev/#/signup) account and get your API key (token).
+    * Create a (free) [here.com](https://platform.here.com/portal/)  account and get your API key. 
     * Copy the `local_application_data.json.sample` to `local_application_data.json`.
     * Store your `openstreetroute.org` API key (token) as `open_route_service_api_key` in `local_application_data.json`.
     * Store your `here.com` API key as `here_api_key` in `local_application_data.json`.
