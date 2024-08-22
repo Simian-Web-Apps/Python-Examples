@@ -18,7 +18,10 @@ html, body {
   th:first-child, td:first-child {
     width: 2em;
   }
-  th:nth-child(1n+2), td:nth-child(1n+2) {
+  th:nth-child(2), td:nth-child(2) {
+    min-width: 20em;
+  }
+  th:nth-child(1n+3), td:nth-child(1n+3) {
     min-width: 7em;
   }
   input {
@@ -36,4 +39,9 @@ html, body {
     width: 40%;
     text-align: right;
   }
+}
+
+.choices__input {
+  width: 100% !important;
+  text-align: left !important;
 }
