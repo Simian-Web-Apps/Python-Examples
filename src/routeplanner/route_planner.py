@@ -56,6 +56,15 @@ def gui_init(meta_data: dict) -> dict:
 
     # Get application data containing secrets and configurables (local mode).
     get_application_data(meta_data)
+    # Extract info from meta data
+    truck_image_base_url = meta_data["application_data"]["truck_image_base_url"]
+    here_frontend_autocomplete_delay = (
+        meta_data["application_data"]["here_frontend_autocomplete_delay_ms"] / 1000
+    )
+    here_backend_lookup_interval = (
+        meta_data["application_data"]["here_backend_lookup_interval_ms"] / 1000
+    )
+    here_frontend_api_key = meta_data["application_data"]["here_frontend_api_key"]
 
     # Create form.
     form = Form()
@@ -77,10 +86,11 @@ def gui_init(meta_data: dict) -> dict:
     }
 
     # Create two columns and add the truck and route panels to them.
-    truck_data = get_truck_data(meta_data["application_data"]["truck_image_base_url"])
+    truck_data = get_truck_data(truck_image_base_url)
     truck_panel = create_truck_panel(truck_data)
-    route_panel = create_route_panel(meta_data)
-
+    route_panel = create_route_panel(
+        here_frontend_autocomplete_delay, here_backend_lookup_interval, here_frontend_api_key
+    )
     cols = component.Columns("two_columns", form)
     cols.setContent([[truck_panel], [route_panel]], [6, 6])
 
@@ -92,6 +102,12 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
 
     # Get application data containing secrets and configurables (local mode).
     get_application_data(meta_data)
+    # Extract info from meta data
+    here_backend_lookup_interval = (
+        meta_data["application_data"]["here_backend_lookup_interval_ms"] / 1000
+    )
+    here_backend_api_key = meta_data["application_data"]["here_backend_api_key"]
+    open_route_service_api_key = meta_data["application_data"]["open_route_service_api_key"]
 
     if payload["event"] == "calculate":
         # Plotly code throws an error on a mapbox._derived key in plotly submission data
@@ -125,13 +141,11 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                 "Content-Type": "application/json; charset=utf-8",
             }
 
-            here_api_key = meta_data["application_data"]["here_api_key"]
-
             locations_data = []
             for location in locations:
                 location_id = location["id"]
                 here_call = requests.get(
-                    f"https://lookup.search.hereapi.com/v1/lookup?id={location_id}&apiKey={here_api_key}",
+                    f"https://lookup.search.hereapi.com/v1/lookup?id={location_id}&apiKey={here_backend_api_key}",
                     headers=here_headers,
                 )
 
@@ -158,7 +172,7 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                 else:
                     # Get the route infor from the web call
                     locations_data.append(here_call.json())
-                    time.sleep(meta_data["application_data"]["here_backend_lookup_interval"])
+                    time.sleep(here_backend_lookup_interval)
 
             # The route
             route = {}
@@ -171,7 +185,7 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                 )
                 call = get_route(
                     lon_latList,
-                    meta_data["application_data"]["open_route_service_api_key"],
+                    open_route_service_api_key,
                 )
 
                 if call.status_code == HTTPStatus.FORBIDDEN:
@@ -233,7 +247,9 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     return payload
 
 
-def create_route_panel(meta_data) -> component.Panel:
+def create_route_panel(
+    here_frontend_autocomplete_delay, here_backend_lookup_interval, here_frontend_api_key
+) -> component.Panel:
     # Create the panel
     route_panel = component.Panel("route_panel")
     route_panel.title = """Route by <a href="https://openrouteservice.org" target="_blank"><u>openrouteservice.org</u></a>"""
@@ -267,12 +283,14 @@ def create_route_panel(meta_data) -> component.Panel:
     select_location.template = "<span>{{ item.title }}</span>"
     select_location.selectValues = "items"
     select_location.searchField = "q"
-    select_location.filter = "apiKey=" + meta_data["application_data"]["here_api_key"]
+    select_location.filter = "apiKey=" + here_frontend_api_key
     select_location.limit = 5
-    select_location.searchDebounce = meta_data["application_data"][
-        "here_frontend_autocomplete_delay"
-    ]
+    select_location.searchDebounce = here_frontend_autocomplete_delay
     select_location.errorLabel = "Location"
+    placeholder = "Type to search"
+    if here_frontend_autocomplete_delay:
+        placeholder = f"{placeholder} ({here_frontend_autocomplete_delay}s delay)"
+    select_location.placeholder = placeholder
     select_location.setRequired()
 
     # Number component in data grid to display leg distance
@@ -299,12 +317,7 @@ def create_route_panel(meta_data) -> component.Panel:
     charge_stops.delimiter = True
     charge_stops.disabled = True
 
-    # Add rate limit disclaimer
-    here_frontend_autocomplete_delay = meta_data["application_data"][
-        "here_frontend_autocomplete_delay"
-    ]
-    here_backend_lookup_interval = meta_data["application_data"]["here_backend_lookup_interval"]
-    # display disclaimer only if one of the delays non zero
+    # Add rate limit disclaimer only if one of the delays non zero
     if here_frontend_autocomplete_delay or here_backend_lookup_interval:
         rate_limit_disclaimer = component.HtmlElement("rate_disclaimer", route_panel)
         rate_limit_disclaimer.tag = "p"
