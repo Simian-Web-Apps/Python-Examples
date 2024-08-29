@@ -89,7 +89,9 @@ def gui_init(meta_data: dict) -> dict:
     truck_data = get_truck_data(truck_image_base_url)
     truck_panel = create_truck_panel(truck_data)
     route_panel = create_route_panel(
-        here_frontend_autocomplete_delay, here_backend_lookup_interval, here_frontend_api_key
+        here_frontend_autocomplete_delay,
+        here_backend_lookup_interval,
+        here_frontend_api_key,
     )
     cols = component.Columns("two_columns", form)
     cols.setContent([[truck_panel], [route_panel]], [6, 6])
@@ -107,7 +109,9 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
         meta_data["application_data"]["here_backend_lookup_interval_ms"] / 1000
     )
     here_backend_api_key = meta_data["application_data"]["here_backend_api_key"]
-    open_route_service_api_key = meta_data["application_data"]["open_route_service_api_key"]
+    open_route_service_api_key = meta_data["application_data"][
+        "open_route_service_api_key"
+    ]
 
     if payload["event"] == "calculate":
         # Plotly code throws an error on a mapbox._derived key in plotly submission data
@@ -181,7 +185,10 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                 # Call openrouteservice with waypoints and API key
 
                 lon_latList = list(
-                    map(lambda x: [x["position"]["lng"], x["position"]["lat"]], locations_data)
+                    map(
+                        lambda x: [x["position"]["lng"], x["position"]["lat"]],
+                        locations_data,
+                    )
                 )
                 call = get_route(
                     lon_latList,
@@ -221,19 +228,26 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
                             waypoint["chargeStops"] = 0
                         else:
                             waypoint["legDistance"] = (
-                                route["features"][0]["properties"]["segments"][idx - 1]["distance"]
+                                route["features"][0]["properties"]["segments"][idx - 1][
+                                    "distance"
+                                ]
                                 / 1000
                             )
                             waypoint["totalDistance"] = (
-                                waypoints[idx - 1]["totalDistance"] + waypoint["legDistance"]
+                                waypoints[idx - 1]["totalDistance"]
+                                + waypoint["legDistance"]
                             )
                             #                            waypoint["chargeStops"] = waypoints[idx - 1]["chargeStops"] + math.ceil(
                             #                                waypoint["legDistance"] / range
                             #                            )
-                            waypoint["chargeStops"] = math.ceil(waypoint["totalDistance"] / range)
+                            waypoint["chargeStops"] = math.ceil(
+                                waypoint["totalDistance"] / range
+                            )
 
                     # Update the payload with the waypoint info.
-                    payload, _ = utils.setSubmissionData(payload, "waypoints", waypoints)
+                    payload, _ = utils.setSubmissionData(
+                        payload, "waypoints", waypoints
+                    )
 
                     # Update the payload with the new values in the Plotly object.
                     payload, _ = utils.setSubmissionData(payload, "plot", plot_obj)
@@ -248,7 +262,9 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
 
 
 def create_route_panel(
-    here_frontend_autocomplete_delay, here_backend_lookup_interval, here_frontend_api_key
+    here_frontend_autocomplete_delay,
+    here_backend_lookup_interval,
+    here_frontend_api_key,
 ) -> component.Panel:
     # Create the panel
     route_panel = component.Panel("route_panel")
@@ -273,12 +289,17 @@ def create_route_panel(
     validate_waypoints.customMessage = "Route must consist of 2, 3, or 4 waypoints."
 
     # Select component in data grid for waypoint (location) selection.
+    # https://formio.github.io/formio.js/app/sandbox is a great place to interactively figure out and test the (data) settings for the select component.
     select_location = component.Select("select_location", waypoints)
     select_location.label = """Location<span class="font-weight-normal"> (by <a class="text-decoration-underline" href="https://here.com" target="_blank">here.com</a>)</span>"""
-    select_location.block = True  # Make the button fill the entire horizontal space of the parent.
+    select_location.block = (
+        True  # Make the button fill the entire horizontal space of the parent.
+    )
     select_location.widget = "ChoicesJS"
     select_location.dataSrc = "url"
-    select_location.data = dict(url="https://autocomplete.search.hereapi.com/v1/autocomplete")
+    select_location.data = dict(
+        url="https://autocomplete.search.hereapi.com/v1/autocomplete"
+    )
     select_location.valuePoperty = "id"
     select_location.template = "<span>{{ item.title }}</span>"
     select_location.selectValues = "items"
@@ -538,19 +559,21 @@ def get_truck_details_table_template(details) -> str:
     table_html = f'<table class="{table_classes}">'
 
     # Table header and start body
-    table_html += f'<thead><tr><td colspan="2"><b>{details["title"]}</b></td></tr></thead><tbody>'
+    table_html += (
+        f'<thead><tr><td colspan="2"><b>{details["title"]}</b></td></tr></thead><tbody>'
+    )
 
     # Table body rows
     for row in details["rows"]:
         # Formio template code to display value if set, otherwise show dash
         # Uses javascript ternary operator:
         # condition ? exprIfTrue : exprIfFalse
-        value_template = (
-            f'{TMPL_DISPLAY_DATA_START}{row["value"]} ? {row["value"]} : "-"{TMPL_DISPLAY_DATA_END}'
-        )
+        value_template = f'{TMPL_DISPLAY_DATA_START}{row["value"]} ? {row["value"]} : "-"{TMPL_DISPLAY_DATA_END}'
 
         # Row with cells containing template code
-        table_html += f'<tr><td>{row["label"]}</td><td>{value_template} {row["unit"]}</td></tr>'
+        table_html += (
+            f'<tr><td>{row["label"]}</td><td>{value_template} {row["unit"]}</td></tr>'
+        )
 
     # Table body and table end
     table_html += "</tbody></table>"
@@ -584,7 +607,9 @@ def update_plot(plot_obj, locations_data, route):
             }
         )
     else:
-        selected_locations = pd.DataFrame({"lat": [], "lon": [], "size": [], "title": []})
+        selected_locations = pd.DataFrame(
+            {"lat": [], "lon": [], "size": [], "title": []}
+        )
 
     # Draw the waypoints with hover data
     plot_obj.figure = px.scatter_mapbox(
@@ -665,7 +690,9 @@ def get_truck_data(image_base_url) -> dict:
 
     for idx, vehicle in enumerate(truck_data["vehicles"]):
         image_name = (
-            re.compile("#pic#([^#]+)").findall(vehicle["commercial"]["legacyMarketingField"])[0]
+            re.compile("#pic#([^#]+)").findall(
+                vehicle["commercial"]["legacyMarketingField"]
+            )[0]
             + ".png"
         )
 
@@ -681,7 +708,9 @@ def get_truck_data(image_base_url) -> dict:
             vehicle["product_url"] = ""
 
         vehicle["label"] = (
-            vehicle["commercial"]["manufacturer"] + " - " + vehicle["commercial"]["model"]
+            vehicle["commercial"]["manufacturer"]
+            + " - "
+            + vehicle["commercial"]["model"]
         )
 
         vehicle["value"] = idx
