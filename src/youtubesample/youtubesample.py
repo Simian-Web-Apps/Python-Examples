@@ -25,7 +25,11 @@ def gui_init(meta_data: dict) -> dict:
     # Create the form and load the json builder into it.
     Form.componentInitializer(app_pic_hello_world=init_app_toplevel_pic)
     Form.componentInitializer(selection_country=init_selection_country)
-    Form.componentInitializer(selection_category=get_init_selection_category(meta_data))
+    Form.componentInitializer(
+        selection_category=get_init_selection_category(
+            meta_data["application_data"]["youtube_developer_key"]
+        )
+    )
     Form.componentInitializer(selection_tag_count=init_selection_tag_count)
     Form.componentInitializer(selection_translation=init_selection_translation)
     Form.componentInitializer(video_list=init_video_list)
@@ -59,12 +63,12 @@ def init_selection_country(comp: component.Select):
     comp.setValues(labels, values, "NL")
 
 
-def get_init_selection_category(meta_data: dict):
+def get_init_selection_category(youtube_developer_key: str):
     def init_selection_category(comp: component.Select):
         # Add trigger-happy event handler to this component.
         # Populate component with list of categories, fetched from YouTube API.
         comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
-        url = f"https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=NL&key={meta_data["application_data"]["youtube_developer_key"]}"
+        url = f"https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=NL&key={youtube_developer_key}"
         response = requests.get(url)
         datajson = response.json()
         labels = [item["snippet"]["title"] for item in datajson["items"]]
