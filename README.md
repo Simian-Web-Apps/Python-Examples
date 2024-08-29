@@ -102,6 +102,18 @@ For running apps locally, we assume that the `src` folder is on the Python path.
 
     Make sure these are reachable.
 
+* **Trending on YouTube**: Find out what's trending in your favourite countries.
+    * Install additional dependencies
+        ```
+        pip install google-api-python-client deep-translator pycountry isodate
+        ```
+    * Obtain a (free) API key from [Google Cloud](https://console.cloud.google.com/apis/library).
+    * Copy the `local_application_data.json.sample` to `local_application_data.json`.
+    * Store your API key as `youtube_developer_key` in `local_application_data.json`.
+    * Then start the app using the `run` module
+        ```
+        python -m run youtubesample.youtubesample
+        ```
 
 ### Running Builder
 
