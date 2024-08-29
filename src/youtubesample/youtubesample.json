@@ -113,7 +113,7 @@
                                             "value": ""
                                         }
                                     ],
-                                    "content": "<br>Courtesy of <a href=\"https://console.cloud.google.com/apis/library\" target=\"_blank\" class=\"fa fa-globe\">YouTube API Library</a>",
+                                    "content": "<br>Courtesy of <a href=\"https://console.cloud.google.com/apis/library\" target=\"_blank\"><i class=\"fa fa-globe\"></i> YouTube API Library</a>",
                                     "refreshOnChange": false,
                                     "key": "html",
                                     "type": "htmlelement",
