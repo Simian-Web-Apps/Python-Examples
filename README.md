@@ -73,6 +73,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         ```
         cd birdswarm
         python setup.py build_ext --inplace
+        cd ..
         ```
     * Then start the app using the `run` module
         ```
@@ -90,7 +91,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
     * Optionally set `here_frontend_autocomplete_delay_ms` (max 1000) and `here_backend_lookup_interval_ms` values to higher values in milliseconds to reduce request rates to here.com.
     * Then start the app using the `run` module
         ```
-        python -m run routeplanner.route_planner.py
+        python -m run routeplanner.route_planner
         ```
 
     ***Note***:  
