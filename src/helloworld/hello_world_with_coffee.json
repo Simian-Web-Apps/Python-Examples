@@ -159,7 +159,7 @@
                                     "value": ""
                                 }
                             ],
-                            "content": "<br>Courtesy of\n<a href=\"https://api.wikimedia.org/wiki/Feed_API/Reference/On_this_day\" target=\"_blank\" class=\"fa fa-globe\">Wikimedia feed API / On this day</a>",
+                            "content": "<br>Courtesy of\n<a href=\"https://api.wikimedia.org/wiki/Feed_API/Reference/On_this_day\" target=\"_blank\"><i class=\"fa fa-globe\"></i> Wikimedia feed API / On this day</a>",
                             "refreshOnChange": false,
                             "key": "html",
                             "type": "htmlelement",
