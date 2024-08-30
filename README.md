@@ -116,6 +116,19 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         python -m run youtubesample.youtubesample
         ```
 
+* **Hello world with coffee**: Find out what happened on a particular date.
+    * Install additional dependencies
+        ```
+        pip install scikit-image json2html
+        ```
+    * Obtain a (free) API key from [Wikimedia](https://api.wikimedia.org/wiki/Getting_started_with_Wikimedia_APIs).        
+    * Copy the `local_application_data.json.sample` to `local_application_data.json`.
+    * Store your user agent as `wikimedia_service_user_agent` and API key as `wikimedia_service_api_key` in `local_application_data.json`.
+    * Then start the app using the `run` module
+        ```
+        python -m run python -m run helloworld.hello_world_with_coffee
+        ```
+
 ### Running Builder
 
 * Start the Builder by running
