@@ -126,7 +126,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
     * Store your user agent as `wikimedia_service_user_agent` and API key as `wikimedia_service_api_key` in `local_application_data.json`.
     * Then start the app using the `run` module
         ```
-        python -m run python -m run helloworld.hello_world_with_coffee
+        python -m run python -m run helloworldwithcoffee.hello_world_with_coffee
         ```
 
 ### Running Builder
