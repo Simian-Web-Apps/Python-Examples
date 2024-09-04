@@ -96,6 +96,19 @@
                                     "tableView": false
                                 },
                                 {
+                                    "label": "Go !",
+                                    "showValidations": false,
+                                    "theme": "success",
+                                    "block": true,
+                                    "leftIcon": "fa fa-rocket",
+                                    "tableView": false,
+                                    "key": "go",
+                                    "type": "button",
+                                    "event": "process",
+                                    "action": "event",
+                                    "input": true
+                                },
+                                {
                                     "label": "Your messages:",
                                     "applyMaskOn": "change",
                                     "disabled": true,
@@ -103,7 +116,48 @@
                                     "defaultValue": "Welcome to Simian!",
                                     "key": "appmessages",
                                     "type": "textfield",
-                                    "input": true
+                                    "input": true,
+                                    "hidden": true
+                                },
+                                {
+                                    "title": "<b>List of videos - Top 10</b>",
+                                    "theme": "info",
+                                    "collapsible": false,
+                                    "key": "bListOfVideosB",
+                                    "type": "panel",
+                                    "label": "Panel",
+                                    "input": false,
+                                    "tableView": false,
+                                    "components": [
+                                        {
+                                            "label": "show_video",
+                                            "leftLabel": "thumbnail",
+                                            "rightLabel": "video (experimental)",
+                                            "hideLabel": true,
+                                            "tableView": false,
+                                            "key": "showVideo",
+                                            "type": "customtoggle",
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "iFrame",
+                                            "hideLabel": true,
+                                            "tableView": false,
+                                            "key": "iframe",
+                                            "customConditional": "show = data.showVideo;",
+                                            "type": "customhtml",
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "video_list",
+                                            "hideLabel": true,
+                                            "tableView": false,
+                                            "key": "video_list",
+                                            "customConditional": "show = !data.showVideo;",
+                                            "type": "customhtml",
+                                            "input": true
+                                        }
+                                    ]
                                 },
                                 {
                                     "label": "label_description",
@@ -119,26 +173,6 @@
                                     "type": "htmlelement",
                                     "input": false,
                                     "tableView": false
-                                }
-                            ]
-                        },
-                        {
-                            "title": "<b>List of videos - Top 25</b>",
-                            "theme": "info",
-                            "collapsible": false,
-                            "key": "bListOfVideosB",
-                            "type": "panel",
-                            "label": "Panel",
-                            "input": false,
-                            "tableView": false,
-                            "components": [
-                                {
-                                    "label": "video_list",
-                                    "hideLabel": true,
-                                    "tableView": false,
-                                    "key": "video_list",
-                                    "type": "customhtml",
-                                    "input": true
                                 }
                             ]
                         }
@@ -157,6 +191,7 @@
                             "theme": "info",
                             "collapsible": false,
                             "key": "bYouTubeVidsExplorationB",
+                            "customConditional": "show = data.plot_video_stats.data.length>0;",
                             "type": "panel",
                             "label": "Panel",
                             "input": false,
@@ -164,17 +199,9 @@
                             "components": [
                                 {
                                     "label": "<b>Video statistics</b>",
-                                    "aspectRatio": 1.3333333333333333,
+                                    "aspectRatio": 1,
                                     "tableView": false,
                                     "key": "plot_video_stats",
-                                    "type": "customplotly",
-                                    "input": true
-                                },
-                                {
-                                    "label": "<b>Top Video Tags</b>",
-                                    "aspectRatio": 1.3333333333333333,
-                                    "tableView": false,
-                                    "key": "plot_video_tags",
                                     "type": "customplotly",
                                     "input": true
                                 }

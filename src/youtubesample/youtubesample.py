@@ -15,7 +15,7 @@ from simian.gui import Form, component, utils
 if __name__ == "__main__":
     from simian.local import Uiformio
 
-    Uiformio("youtubesample", window_title="YouTube Trending Videos")
+    Uiformio("youtubesample", window_title="YouTube Trending Videos", debug=True)
 
 
 def gui_init(meta_data: dict) -> dict:
@@ -24,15 +24,22 @@ def gui_init(meta_data: dict) -> dict:
 
     # Create the form and load the json builder into it.
     Form.componentInitializer(app_pic_hello_world=init_app_toplevel_pic)
-    Form.componentInitializer(selection_country=init_selection_country)
+    #    Form.componentInitializer(selection_country=init_selection_country)
+    Form.componentInitializer(
+        selection_country=get_init_selection_country(
+            meta_data["application_data"]["youtube_developer_key"]
+        )
+    )
     Form.componentInitializer(
         selection_category=get_init_selection_category(
             meta_data["application_data"]["youtube_developer_key"]
         )
     )
-    Form.componentInitializer(selection_tag_count=init_selection_tag_count)
-    Form.componentInitializer(selection_translation=init_selection_translation)
+    # Form.componentInitializer(selection_tag_count=init_selection_tag_count)
+    # Form.componentInitializer(selection_translation=init_selection_translation)
     Form.componentInitializer(video_list=init_video_list)
+    Form.componentInitializer(iframe=init_video_iframe)
+    Form.componentInitializer(showVideo=init_show_video)
 
     form = Form(from_file=__file__)
     examples_url = "https://github.com/Simian-Web-Apps/Python-Examples/"
@@ -47,6 +54,9 @@ def gui_init(meta_data: dict) -> dict:
         "showChanged": False,
     }
 
+    # And do the initial query
+    payload["followUp"] = "process"
+
     return payload
 
 
@@ -54,20 +64,38 @@ def init_video_list(comp: component.Html):
     comp.sanitizeOptions = {"USE_PROFILES": {"html": True}, "ADD_ATTR": ["target"]}
 
 
-def init_selection_country(comp: component.Select):
-    # Add trigger-happy event handler to this component.
-    # Populate component with list of ISO 3166 Country Codes, using the pycountry module.
-    comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
-    labels = [item.name for item in list(pycountry.countries)]
-    values = [item.alpha_2 for item in list(pycountry.countries)]
-    comp.setValues(labels, values, "NL")
+def init_video_iframe(comp: component.Html):
+    comp.sanitizeOptions = {
+        "USE_PROFILES": {"html": True},
+        "ADD_TAGS": ["iframe"],
+        "ADD_ATTR": ["src", "allow", "allowFullScreen", "loading"],
+    }
+
+
+def init_show_video(comp: component.Toggle):
+    comp.defaultValue = False
+
+
+def get_init_selection_country(youtube_developer_key: str):
+    def init_selection_country(comp: component.Select):
+        # Add trigger-happy event handler to this component.
+        # Populate component with list of ISO 3166 Country Codes, using the pycountry module.
+        # comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+        url = f"https://www.googleapis.com/youtube/v3/i18nRegions?part=snippet&hl=en_US&key={youtube_developer_key}"
+        response = requests.get(url)
+        datajson = response.json()
+        labels = [item["snippet"]["name"] for item in datajson["items"]]
+        values = [item["snippet"]["gl"] for item in datajson["items"]]
+        comp.setValues(labels, values, "NL")
+
+    return init_selection_country
 
 
 def get_init_selection_category(youtube_developer_key: str):
     def init_selection_category(comp: component.Select):
         # Add trigger-happy event handler to this component.
         # Populate component with list of categories, fetched from YouTube API.
-        comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+        # comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
         url = f"https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=NL&key={youtube_developer_key}"
         response = requests.get(url)
         datajson = response.json()
@@ -78,14 +106,14 @@ def get_init_selection_category(youtube_developer_key: str):
     return init_selection_category
 
 
-def init_selection_tag_count(comp: component.Slider):
-    # Add trigger-happy event handler to this component.
-    comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+# def init_selection_tag_count(comp: component.Slider):
+# Add trigger-happy event handler to this component.
+# comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
 
 
-def init_selection_translation(comp: component.Toggle):
-    # Add trigger-happy event handler to this component.
-    comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+# def init_selection_translation(comp: component.Toggle):
+# Add trigger-happy event handler to this component.
+# comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
 
 
 def init_app_toplevel_pic(comp: component.HtmlElement):
@@ -124,13 +152,14 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
 
 
 def process(meta_data: dict, payload: dict) -> dict:
+    nr_to_display = 10
+
     # Fetch trending YouTube videos, based on user selection.
     selection_country, _ = utils.getSubmissionData(payload, "selection_country")
     selection_category, _ = utils.getSubmissionData(payload, "selection_category")
     selection_tag_count, _ = utils.getSubmissionData(payload, "selection_tag_count")
     selection_translation, _ = utils.getSubmissionData(payload, "selection_translation")
     plot_obj_video_stats, _ = utils.getSubmissionData(payload, "plot_video_stats")
-    plot_obj_video_tags, _ = utils.getSubmissionData(payload, "plot_video_tags")
 
     # Initialize YouTube connection and create results plots.
     youtube = build(
@@ -142,50 +171,87 @@ def process(meta_data: dict, payload: dict) -> dict:
         base_message = "Results found."
         tags = []
     except:
-        payload, _ = utils.setSubmissionData(
-            payload, "appmessages", "No results found for this selection."
+        video_df = get_empty_video_df()
+        payload = utils.addAlert(payload, "No results found for this selection.", "danger")
+    #        return payload
+
+    if len(video_df) > 0:
+        video_df_top = video_df.iloc[:nr_to_display]
+        if selection_translation:
+            try:
+                video_title_array = [video for video in video_df_top["snippet.title"]]
+                video_title_array = GoogleTranslator(source="auto", target="en").translate_batch(
+                    video_title_array
+                )
+                base_message += " Titles translated to English."
+            except:
+                base_message += " Title translation failed."
+        else:
+            video_title_array = [video for video in video_df_top["snippet.title"]]
+            base_message += " No title translation applied."
+
+        for items in video_df_top["snippet.tags"]:
+            if type(items) != float:
+                if selection_translation:
+                    # tags.extend(GoogleTranslator(source="auto", target="en").translate_batch(items))
+                    tags.extend(items)
+                else:
+                    tags.extend(items)
+
+        video_link_array = [
+            "https://www.youtube.com/watch?v=" + video for video in video_df_top["id"]
+        ]
+        video_thumbnail_array = [
+            "https://img.youtube.com/vi/" + video + "/default.jpg" for video in video_df_top["id"]
+        ]
+        video_embed_array = [
+            "https://www.youtube.com/embed/" + video for video in video_df_top["id"]
+        ]
+        full_references = [
+            f'<a href="{x[0]}/" target="_blank"><img src="{x[2]}" title="{x[1]}"></a>'
+            for x in zip(video_link_array, video_title_array, video_thumbnail_array)
+        ]
+        full_references_html = (
+            '<div class="d-flex flex-row flex-wrap">'
+            + "".join(['<div class="p-2 mx-auto">' + item + "</div>" for item in full_references])
+            + "</div>"
         )
-        return payload
-
-    if selection_translation:
-        try:
-            video_title_array = [video for video in video_df["snippet.title"]]
-            video_title_array = GoogleTranslator(source="auto", target="en").translate_batch(
-                video_title_array
+        video_embed_array = [
+            "https://www.youtube.com/embed/" + video for video in video_df_top["id"]
+        ]
+        full_embed_html = (
+            '<div class="d-flex flex-row flex-wrap">'
+            + "".join(
+                [
+                    "<iframe"
+                    + ' class="p-2 mx-auto"'
+                    + ' loading="lazy"'
+                    + f' src="{item[0]}"'
+                    + f' title="{item[1]}"'
+                    + ' loading="lazy"'
+                    + ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'
+                    + " allowFullScreen></iframe>"
+                    for item in zip(video_embed_array, video_title_array)
+                ]
             )
-            base_message += " Titles translated to English."
-        except:
-            base_message += " Title translation failed."
+            + "</div>"
+        )
+
     else:
-        video_title_array = [video for video in video_df["snippet.title"]]
-        base_message += " No title translation applied."
+        full_references_html = ""
+        base_message = ""
+        tags = []
 
-    for items in video_df["snippet.tags"]:
-        if type(items) != float:
-            if selection_translation:
-                # tags.extend(GoogleTranslator(source="auto", target="en").translate_batch(items))
-                tags.extend(items)
-            else:
-                tags.extend(items)
-
-    video_link_array = ["https://www.youtube.com/watch?v=" + video for video in video_df["id"]]
-    full_references = [
-        f'<a href="{x[0]}/" target="_blank">{x[1]}</a>'
-        for x in zip(video_link_array, video_title_array)
-    ]
-    full_references_html = (
-        "<ul>\n"
-        + "\n".join(["<li>".rjust(8) + item + "</li>" for item in full_references])
-        + "\n</ul>"
-    )
-
-    plot_obj_video_stats = plotVideoStats(video_df, plot_obj_video_stats)
-    plot_obj_video_tags = plotTopNTags(video_df, selection_tag_count, plot_obj_video_tags, tags)
+    plot_obj_video_stats = plotVideoStats(video_df, plot_obj_video_stats, selection_tag_count, tags)
 
     payload, _ = utils.setSubmissionData(payload, "plot_video_stats", plot_obj_video_stats)
-    payload, _ = utils.setSubmissionData(payload, "plot_video_tags", plot_obj_video_tags)
     payload, _ = utils.setSubmissionData(payload, "video_list", full_references_html)
     payload, _ = utils.setSubmissionData(payload, "appmessages", base_message)
+    payload, _ = utils.setSubmissionData(
+        payload,
+        "iframe",
+        full_embed_html,
+    )
 
     return payload
 
@@ -197,7 +263,7 @@ def extractYouTubeData(youtube, selection_country, selection_category):
         chart="mostPopular",
         regionCode=selection_country,
         videoCategoryId=str(selection_category),
-        maxResults=20,
+        maxResults=25,
     )
 
     response = video_request.execute()
@@ -206,16 +272,18 @@ def extractYouTubeData(youtube, selection_country, selection_category):
     return video_df
 
 
-def plotVideoStats(video_df, plot_obj_duration_vs_likes):
+def plotVideoStats(video_df, plot_obj_duration_vs_likes, topN, tags):
     # Create duration/likes results plot.
     fig = make_subplots(
-        rows=2,
+        rows=3,
         cols=2,
+        specs=[[{}, {}], [{}, {}], [{"colspan": 2}, None]],
         subplot_titles=(
             "Views vs. likes",
             "Duration vs. likes",
             "Comments vs. likes",
             "Duration vs. comments",
+            "Top tags vs. frequency",
         ),
     )
 
@@ -230,9 +298,17 @@ def plotVideoStats(video_df, plot_obj_duration_vs_likes):
         mode="markers",
         row=1,
         col=1,
+        hovertext=video_df["snippet.title"],
+        hoverinfo="text",
     )
     fig.add_scatter(
-        x=video_df["duration"], y=video_df["statistics.likeCount"], mode="markers", row=1, col=2
+        x=video_df["duration"],
+        y=video_df["statistics.likeCount"],
+        mode="markers",
+        row=1,
+        col=2,
+        hovertext=video_df["snippet.title"],
+        hoverinfo="text",
     )
     fig.add_scatter(
         x=video_df["statistics.commentCount"],
@@ -240,22 +316,75 @@ def plotVideoStats(video_df, plot_obj_duration_vs_likes):
         mode="markers",
         row=2,
         col=1,
+        hovertext=video_df["snippet.title"],
+        hoverinfo="text",
     )
     fig.add_scatter(
-        x=video_df["duration"], y=video_df["statistics.commentCount"], mode="markers", row=2, col=2
+        x=video_df["duration"],
+        y=video_df["statistics.commentCount"],
+        mode="markers",
+        row=2,
+        col=2,
+        hovertext=video_df["snippet.title"],
+        hoverinfo="text",
     )
+
+    tags_df = pd.DataFrame(tags)
+    tags_freq_df = (
+        tags_df.value_counts().iloc[:topN].rename_axis("tag").reset_index(name="frequency")
+    )
+    fig.add_bar(x=tags_freq_df["tag"], y=tags_freq_df["frequency"], row=3, col=1)
+
     fig.update_layout(showlegend=False)
     plot_obj_duration_vs_likes.figure = fig
 
     return plot_obj_duration_vs_likes
 
 
-def plotTopNTags(video_df, topN, plot_obj_video_tags, tags):
-    # Create video tags bar chart.
-    tags_df = pd.DataFrame(tags)
-    tags_freq_df = (
-        tags_df.value_counts().iloc[:topN].rename_axis("tag").reset_index(name="frequency")
+def get_empty_video_df():
+    return pd.DataFrame(
+        columns=[
+            "kind",
+            "etag",
+            "id",
+            "snippet.publishedAt",
+            "snippet.channelId",
+            "snippet.title",
+            "snippet.description",
+            "snippet.thumbnails.default.url",
+            "snippet.thumbnails.default.width",
+            "snippet.thumbnails.default.height",
+            "snippet.thumbnails.medium.url",
+            "snippet.thumbnails.medium.width",
+            "snippet.thumbnails.medium.height",
+            "snippet.thumbnails.high.url",
+            "snippet.thumbnails.high.width",
+            "snippet.thumbnails.high.height",
+            "snippet.thumbnails.standard.url",
+            "snippet.thumbnails.standard.width",
+            "snippet.thumbnails.standard.height",
+            "snippet.thumbnails.maxres.url",
+            "snippet.thumbnails.maxres.width",
+            "snippet.thumbnails.maxres.height",
+            "snippet.channelTitle",
+            "snippet.tags",
+            "snippet.categoryId",
+            "snippet.liveBroadcastContent",
+            "snippet.localized.title",
+            "snippet.localized.description",
+            "snippet.defaultAudioLanguage",
+            "contentDetails.duration",
+            "contentDetails.dimension",
+            "contentDetails.definition",
+            "contentDetails.caption",
+            "contentDetails.licensedContent",
+            "contentDetails.regionRestriction.blocked",
+            "contentDetails.projection",
+            "statistics.viewCount",
+            "statistics.likeCount",
+            "statistics.favoriteCount",
+            "statistics.commentCount",
+            "snippet.defaultLanguage",
+            "contentDetails.regionRestriction.allowed",
+        ]
     )
-    plot_obj_video_tags.figure = px.bar(tags_freq_df, x="tag", y="frequency")
-
-    return plot_obj_video_tags
