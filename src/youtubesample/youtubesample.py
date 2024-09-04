@@ -4,9 +4,7 @@ import os
 import isodate
 import pandas as pd
 import plotly.express as px
-import pycountry
 import requests
-from deep_translator import GoogleTranslator
 from googleapiclient.discovery import build
 from plotly.subplots import make_subplots
 
@@ -15,7 +13,7 @@ from simian.gui import Form, component, utils
 if __name__ == "__main__":
     from simian.local import Uiformio
 
-    Uiformio("youtubesample", window_title="YouTube Trending Videos", debug=True)
+    Uiformio("youtubesample", window_title="YouTube Trending Videos")
 
 
 def gui_init(meta_data: dict) -> dict:
@@ -24,7 +22,6 @@ def gui_init(meta_data: dict) -> dict:
 
     # Create the form and load the json builder into it.
     Form.componentInitializer(app_pic_hello_world=init_app_toplevel_pic)
-    #    Form.componentInitializer(selection_country=init_selection_country)
     Form.componentInitializer(
         selection_country=get_init_selection_country(
             meta_data["application_data"]["youtube_developer_key"]
@@ -35,8 +32,6 @@ def gui_init(meta_data: dict) -> dict:
             meta_data["application_data"]["youtube_developer_key"]
         )
     )
-    # Form.componentInitializer(selection_tag_count=init_selection_tag_count)
-    # Form.componentInitializer(selection_translation=init_selection_translation)
     Form.componentInitializer(video_list=init_video_list)
     Form.componentInitializer(iframe=init_video_iframe)
     Form.componentInitializer(showVideo=init_show_video)
@@ -51,7 +46,7 @@ def gui_init(meta_data: dict) -> dict:
                 '<i class="fa fa-github"></i></a>&nbsp;YouTube Trending Videos'
             )
         },
-        "showChanged": False,
+        "showChanged": True,
     }
 
     # And do the initial query
@@ -106,16 +101,6 @@ def get_init_selection_category(youtube_developer_key: str):
     return init_selection_category
 
 
-# def init_selection_tag_count(comp: component.Slider):
-# Add trigger-happy event handler to this component.
-# comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
-
-
-# def init_selection_translation(comp: component.Toggle):
-# Add trigger-happy event handler to this component.
-# comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
-
-
 def init_app_toplevel_pic(comp: component.HtmlElement):
     # Voeg depictie met titel toe in de linker bovenhoek.
     comp.setLocalImage(
@@ -148,18 +133,22 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     get_application_data(meta_data)
     callback = utils.getEventFunction(meta_data, payload)
 
+    # Remove the "form has changes badge".
+    payload["pristine"] = True
+
     return callback(meta_data, payload)
 
 
 def process(meta_data: dict, payload: dict) -> dict:
-    nr_to_display = 10
+    nr_to_display = 12
 
     # Fetch trending YouTube videos, based on user selection.
     selection_country, _ = utils.getSubmissionData(payload, "selection_country")
     selection_category, _ = utils.getSubmissionData(payload, "selection_category")
-    selection_tag_count, _ = utils.getSubmissionData(payload, "selection_tag_count")
-    selection_translation, _ = utils.getSubmissionData(payload, "selection_translation")
-    plot_obj_video_stats, _ = utils.getSubmissionData(payload, "plot_video_stats")
+    plot_obj_views_vs_likes, _ = utils.getSubmissionData(payload, "plot_views_vs_likes")
+    plot_obj_duration_vs_likes, _ = utils.getSubmissionData(payload, "plot_duration_vs_likes")
+    plot_obj_comments_vs_likes, _ = utils.getSubmissionData(payload, "plot_comments_vs_likes")
+    plot_obj_duration_vs_comments, _ = utils.getSubmissionData(payload, "plot_duration_vs_comments")
 
     # Initialize YouTube connection and create results plots.
     youtube = build(
@@ -168,8 +157,6 @@ def process(meta_data: dict, payload: dict) -> dict:
 
     try:
         video_df = extractYouTubeData(youtube, selection_country, selection_category)
-        base_message = "Results found."
-        tags = []
     except:
         video_df = get_empty_video_df()
         payload = utils.addAlert(payload, "No results found for this selection.", "danger")
@@ -177,32 +164,12 @@ def process(meta_data: dict, payload: dict) -> dict:
 
     if len(video_df) > 0:
         video_df_top = video_df.iloc[:nr_to_display]
-        if selection_translation:
-            try:
-                video_title_array = [video for video in video_df_top["snippet.title"]]
-                video_title_array = GoogleTranslator(source="auto", target="en").translate_batch(
-                    video_title_array
-                )
-                base_message += " Titles translated to English."
-            except:
-                base_message += " Title translation failed."
-        else:
-            video_title_array = [video for video in video_df_top["snippet.title"]]
-            base_message += " No title translation applied."
-
-        for items in video_df_top["snippet.tags"]:
-            if type(items) != float:
-                if selection_translation:
-                    # tags.extend(GoogleTranslator(source="auto", target="en").translate_batch(items))
-                    tags.extend(items)
-                else:
-                    tags.extend(items)
-
+        video_title_array = [video for video in video_df_top["snippet.title"]]
         video_link_array = [
             "https://www.youtube.com/watch?v=" + video for video in video_df_top["id"]
         ]
         video_thumbnail_array = [
-            "https://img.youtube.com/vi/" + video + "/default.jpg" for video in video_df_top["id"]
+            "https://img.youtube.com/vi/" + video + "/mqdefault.jpg" for video in video_df_top["id"]
         ]
         video_embed_array = [
             "https://www.youtube.com/embed/" + video for video in video_df_top["id"]
@@ -223,14 +190,13 @@ def process(meta_data: dict, payload: dict) -> dict:
             '<div class="d-flex flex-row flex-wrap">'
             + "".join(
                 [
-                    "<iframe"
-                    + ' class="p-2 mx-auto"'
+                    '<div class="py-3 mx-auto"><iframe'
                     + ' loading="lazy"'
                     + f' src="{item[0]}"'
                     + f' title="{item[1]}"'
                     + ' loading="lazy"'
                     + ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'
-                    + " allowFullScreen></iframe>"
+                    + " allowFullScreen></iframe></div>"
                     for item in zip(video_embed_array, video_title_array)
                 ]
             )
@@ -239,14 +205,70 @@ def process(meta_data: dict, payload: dict) -> dict:
 
     else:
         full_references_html = ""
-        base_message = ""
-        tags = []
+        full_embed_html = ""
 
-    plot_obj_video_stats = plotVideoStats(video_df, plot_obj_video_stats, selection_tag_count, tags)
+    video_df["contentDetails.duration"] = video_df["contentDetails.duration"].astype(str)
+    video_df["duration"] = video_df["contentDetails.duration"].apply(
+        lambda x: isodate.parse_duration(x).total_seconds()
+    )
 
-    payload, _ = utils.setSubmissionData(payload, "plot_video_stats", plot_obj_video_stats)
+    payload, _ = utils.setSubmissionData(
+        payload,
+        "plot_views_vs_likes",
+        plotVs(
+            plot_obj_views_vs_likes,
+            video_df,
+            "statistics.viewCount",
+            "statistics.likeCount",
+            "Views vs. likes",
+            "Views",
+            "Likes",
+        ),
+    )
+
+    payload, _ = utils.setSubmissionData(
+        payload,
+        "plot_duration_vs_likes",
+        plotVs(
+            plot_obj_duration_vs_likes,
+            video_df,
+            "duration",
+            "statistics.likeCount",
+            "Duration vs. likes",
+            "Duration",
+            "Likes",
+        ),
+    )
+
+    payload, _ = utils.setSubmissionData(
+        payload,
+        "plot_comments_vs_likes",
+        plotVs(
+            plot_obj_comments_vs_likes,
+            video_df,
+            "statistics.commentCount",
+            "statistics.likeCount",
+            "Comments vs. likes",
+            "Comments",
+            "Likes",
+        ),
+    )
+
+    payload, _ = utils.setSubmissionData(
+        payload,
+        "plot_duration_vs_comments",
+        plotVs(
+            plot_obj_duration_vs_comments,
+            video_df,
+            "duration",
+            "statistics.commentCount",
+            "Duration vs. comments",
+            "Comments",
+            "Duration",
+        ),
+    )
+
     payload, _ = utils.setSubmissionData(payload, "video_list", full_references_html)
-    payload, _ = utils.setSubmissionData(payload, "appmessages", base_message)
     payload, _ = utils.setSubmissionData(
         payload,
         "iframe",
@@ -272,73 +294,31 @@ def extractYouTubeData(youtube, selection_country, selection_category):
     return video_df
 
 
-def plotVideoStats(video_df, plot_obj_duration_vs_likes, topN, tags):
-    # Create duration/likes results plot.
-    fig = make_subplots(
-        rows=3,
-        cols=2,
-        specs=[[{}, {}], [{}, {}], [{"colspan": 2}, None]],
-        subplot_titles=(
-            "Views vs. likes",
-            "Duration vs. likes",
-            "Comments vs. likes",
-            "Duration vs. comments",
-            "Top tags vs. frequency",
-        ),
+def plotVs(plotObj, video_df, x_field, y_field, title, x_label, y_label):
+    # Hide selection tools and plotly logo
+    plotObj.config = dict(modeBarButtonsToRemove=["select", "lasso", "logo"])
+
+    plotObj.figure = px.scatter(
+        video_df,
+        x=x_field,
+        y=y_field,
+        title=title,
+        labels={
+            x_field: x_label,
+            y_field: y_label,
+        },
+        hover_name="snippet.title",
     )
 
-    video_df["contentDetails.duration"] = video_df["contentDetails.duration"].astype(str)
-    video_df["duration"] = video_df["contentDetails.duration"].apply(
-        lambda x: isodate.parse_duration(x).total_seconds()
-    )
-
-    fig.add_scatter(
-        x=video_df["statistics.viewCount"],
-        y=video_df["statistics.likeCount"],
+    plotObj.figure.update_traces(
         mode="markers",
-        row=1,
-        col=1,
-        hovertext=video_df["snippet.title"],
-        hoverinfo="text",
-    )
-    fig.add_scatter(
-        x=video_df["duration"],
-        y=video_df["statistics.likeCount"],
-        mode="markers",
-        row=1,
-        col=2,
-        hovertext=video_df["snippet.title"],
-        hoverinfo="text",
-    )
-    fig.add_scatter(
-        x=video_df["statistics.commentCount"],
-        y=video_df["statistics.likeCount"],
-        mode="markers",
-        row=2,
-        col=1,
-        hovertext=video_df["snippet.title"],
-        hoverinfo="text",
-    )
-    fig.add_scatter(
-        x=video_df["duration"],
-        y=video_df["statistics.commentCount"],
-        mode="markers",
-        row=2,
-        col=2,
-        hovertext=video_df["snippet.title"],
-        hoverinfo="text",
+        # hovertext="snippet.title",
+        # hoverinfo="text",
     )
 
-    tags_df = pd.DataFrame(tags)
-    tags_freq_df = (
-        tags_df.value_counts().iloc[:topN].rename_axis("tag").reset_index(name="frequency")
-    )
-    fig.add_bar(x=tags_freq_df["tag"], y=tags_freq_df["frequency"], row=3, col=1)
+    plotObj.figure.update_layout(margin={"r": 50, "t": 50, "l": 50, "b": 50}, showlegend=False)
 
-    fig.update_layout(showlegend=False)
-    plot_obj_duration_vs_likes.figure = fig
-
-    return plot_obj_duration_vs_likes
+    return plotObj
 
 
 def get_empty_video_df():
