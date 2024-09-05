@@ -159,8 +159,6 @@ def process(meta_data: dict, payload: dict) -> dict:
         video_df = extractYouTubeData(youtube, selection_country, selection_category)
     except:
         video_df = get_empty_video_df()
-        payload = utils.addAlert(payload, "No results found for this selection.", "danger")
-    #        return payload
 
     if len(video_df) > 0:
         video_df_top = video_df.iloc[:nr_to_display]
@@ -204,8 +202,9 @@ def process(meta_data: dict, payload: dict) -> dict:
         )
 
     else:
-        full_references_html = ""
-        full_embed_html = ""
+        no_results_html = '<p class="my-5 py-5 text-danger text-center">No results for this category in this region.</p>'
+        full_references_html = no_results_html
+        full_embed_html = no_results_html
 
     video_df["contentDetails.duration"] = video_df["contentDetails.duration"].astype(str)
     video_df["duration"] = video_df["contentDetails.duration"].apply(
