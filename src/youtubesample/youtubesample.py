@@ -13,7 +13,7 @@ from simian.gui import Form, component, utils
 if __name__ == "__main__":
     from simian.local import Uiformio
 
-    Uiformio("youtubesample", window_title="YouTube Trending Videos")
+    Uiformio("youtubesample", window_title="YouTube Trending Videos", debug=True)
 
 
 def gui_init(meta_data: dict) -> dict:
@@ -21,7 +21,7 @@ def gui_init(meta_data: dict) -> dict:
     get_application_data(meta_data)
 
     # Create the form and load the json builder into it.
-    Form.componentInitializer(app_pic_hello_world=init_app_toplevel_pic)
+    # Form.componentInitializer(app_pic_hello_world=init_app_toplevel_pic)
     Form.componentInitializer(
         selection_country=get_init_selection_country(
             meta_data["application_data"]["youtube_developer_key"]
@@ -75,7 +75,7 @@ def get_init_selection_country(youtube_developer_key: str):
     def init_selection_country(comp: component.Select):
         # Add trigger-happy event handler to this component.
         # Populate component with list of ISO 3166 Country Codes, using the pycountry module.
-        # comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+        comp.properties = {"debounceTime": 700, "triggerHappy": "process"}
         url = f"https://www.googleapis.com/youtube/v3/i18nRegions?part=snippet&hl=en_US&key={youtube_developer_key}"
         response = requests.get(url)
         datajson = response.json()
@@ -90,7 +90,7 @@ def get_init_selection_category(youtube_developer_key: str):
     def init_selection_category(comp: component.Select):
         # Add trigger-happy event handler to this component.
         # Populate component with list of categories, fetched from YouTube API.
-        # comp.properties = {"debounceTime": 1000, "triggerHappy": "process"}
+        comp.properties = {"debounceTime": 700, "triggerHappy": "process"}
         url = f"https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=NL&key={youtube_developer_key}"
         response = requests.get(url)
         datajson = response.json()
@@ -101,12 +101,12 @@ def get_init_selection_category(youtube_developer_key: str):
     return init_selection_category
 
 
-def init_app_toplevel_pic(comp: component.HtmlElement):
-    # Voeg depictie met titel toe in de linker bovenhoek.
-    comp.setLocalImage(
-        os.path.join(os.path.dirname(__file__), "app_pic.png"), scale_to_parent_width=True
-    )
-    comp.customClass = "px-5"
+# def init_app_toplevel_pic(comp: component.HtmlElement):
+#    # Voeg depictie met titel toe in de linker bovenhoek.
+#    comp.setLocalImage(
+#        os.path.join(os.path.dirname(__file__), "app_pic.png"), scale_to_parent_width=True
+#    )
+#    comp.customClass = "px-5"
 
 
 def get_application_data(meta_data: dict):
@@ -202,7 +202,7 @@ def process(meta_data: dict, payload: dict) -> dict:
         )
 
     else:
-        no_results_html = '<p class="my-5 py-5 text-danger text-center">No results for this category in this region.</p>'
+        no_results_html = '<p class="my-5 py-5 text-danger text-center">No results for this category in this country.</p>'
         full_references_html = no_results_html
         full_embed_html = no_results_html
 
@@ -315,7 +315,10 @@ def plotVs(plotObj, video_df, x_field, y_field, title, x_label, y_label):
         # hoverinfo="text",
     )
 
-    plotObj.figure.update_layout(margin={"r": 50, "t": 50, "l": 50, "b": 50}, showlegend=False)
+    plotObj.figure.update_layout(
+        margin={"r": 50, "t": 50, "l": 50, "b": 50},
+        showlegend=False,
+    )
 
     return plotObj
 

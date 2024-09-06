@@ -6,32 +6,51 @@
                 {
                     "components": [
                         {
-                            "label": "HTML",
-                            "attrs": [
-                                {
-                                    "attr": "",
-                                    "value": ""
-                                }
-                            ],
-                            "refreshOnChange": false,
-                            "key": "app_pic_hello_world",
-                            "type": "htmlelement",
-                            "input": false,
-                            "tableView": false
-                        },
-                        {
-                            "title": "<b>Welcome</b>",
-                            "theme": "info",
-                            "collapsible": false,
-                            "key": "HiThere",
-                            "type": "panel",
-                            "label": "Panel",
+                            "label": "welcome",
+                            "hideLabel": true,
+                            "key": "welcome",
+                            "type": "well",
                             "input": false,
                             "tableView": false,
                             "components": [
                                 {
+                                    "label": "HTML",
+                                    "tag": "img",
+                                    "attrs": [
+                                        {
+                                            "attr": "src",
+                                            "value": "https://downloads.simiansuite.com/demo-static-content/simian_web_apps_logo_text_as_path.svg"
+                                        }
+                                    ],
+                                    "refreshOnChange": false,
+                                    "customClass": "ml-3 mt-3",
+                                    "key": "app_pic_hello_world",
+                                    "type": "htmlelement",
+                                    "input": false,
+                                    "tableView": false
+                                },
+                                {
+                                    "label": "trending",
+                                    "tag": "span",
+                                    "className": "display-4",
+                                    "attrs": [
+                                        {
+                                            "attr": "",
+                                            "value": ""
+                                        }
+                                    ],
+                                    "content": "Trending on YouTube",
+                                    "refreshOnChange": false,
+                                    "customClass": "ml-3 mb-5",
+                                    "key": "videoStatistics2",
+                                    "type": "htmlelement",
+                                    "input": false,
+                                    "tableView": false
+                                },
+                                {
                                     "label": "Select country",
                                     "widget": "choicesjs",
+                                    "customClass": "mx-3",
                                     "tableView": true,
                                     "key": "selection_country",
                                     "type": "select",
@@ -40,30 +59,17 @@
                                 {
                                     "label": "Select YouTube video category",
                                     "widget": "choicesjs",
-                                    "customClass": "mb-5",
+                                    "customClass": "mb3 mx-3",
                                     "tableView": true,
                                     "key": "selection_category",
                                     "type": "select",
                                     "input": true
                                 },
                                 {
-                                    "label": "Go !",
-                                    "showValidations": false,
-                                    "theme": "success",
-                                    "block": true,
-                                    "leftIcon": "fa fa-rocket",
-                                    "tableView": false,
-                                    "key": "go",
-                                    "type": "button",
-                                    "event": "process",
-                                    "action": "event",
-                                    "input": true
-                                },
-                                {
                                     "label": "show_video",
                                     "leftLabel": "thumbnail",
                                     "rightLabel": "video (experimental)",
-                                    "customClass": "pt-5",
+                                    "customClass": "mx-3",
                                     "hideLabel": true,
                                     "tableView": false,
                                     "key": "showVideo",
@@ -80,6 +86,7 @@
                                     ],
                                     "content": "<br>Courtesy of <a href=\"https://console.cloud.google.com/apis/library\" target=\"_blank\"><i class=\"fa fa-globe\"></i> YouTube API Library</a>",
                                     "refreshOnChange": false,
+                                    "customClass": "mx-3 mt-5",
                                     "key": "html",
                                     "type": "htmlelement",
                                     "input": false,
@@ -98,17 +105,35 @@
                 {
                     "components": [
                         {
-                            "title": "<b>List of videos - Top 12</b>",
-                            "theme": "info",
-                            "collapsible": false,
-                            "key": "bListOfVideosB",
-                            "type": "panel",
-                            "label": "Panel",
+                            "label": "top results",
+                            "customClass": "flex-grow",
+                            "hideLabel": true,
+                            "key": "topResults",
+                            "type": "well",
                             "input": false,
                             "tableView": false,
                             "components": [
                                 {
+                                    "label": "video statistics",
+                                    "tag": "span",
+                                    "className": "display-4",
+                                    "attrs": [
+                                        {
+                                            "attr": "",
+                                            "value": ""
+                                        }
+                                    ],
+                                    "content": "Top results",
+                                    "refreshOnChange": false,
+                                    "customClass": "mx-3 mt-3",
+                                    "key": "videoStatistics1",
+                                    "type": "htmlelement",
+                                    "input": false,
+                                    "tableView": false
+                                },
+                                {
                                     "label": "iFrame",
+                                    "customClass": "mx-3",
                                     "hideLabel": true,
                                     "tableView": false,
                                     "key": "iframe",
@@ -118,6 +143,7 @@
                                 },
                                 {
                                     "label": "video_list",
+                                    "customClass": "mx-3",
                                     "hideLabel": true,
                                     "tableView": false,
                                     "key": "video_list",
@@ -143,16 +169,31 @@
             "tableView": false
         },
         {
-            "title": "<b>YouTube video exploration</b>",
-            "theme": "info",
-            "collapsible": false,
-            "key": "bYouTubeVidsExplorationB",
-            "customConditional": "show = data.plot_video_stats.data.length>0;",
-            "type": "panel",
-            "label": "Panel",
+            "label": "statistics",
+            "hideLabel": true,
+            "key": "statistics",
+            "type": "well",
             "input": false,
             "tableView": false,
             "components": [
+                {
+                    "label": "video statistics",
+                    "tag": "span",
+                    "className": "display-4",
+                    "attrs": [
+                        {
+                            "attr": "",
+                            "value": ""
+                        }
+                    ],
+                    "content": "Video statistics",
+                    "refreshOnChange": false,
+                    "customClass": "mx-3 mt-3",
+                    "key": "videoStatistics",
+                    "type": "htmlelement",
+                    "input": false,
+                    "tableView": false
+                },
                 {
                     "label": "Columns",
                     "columns": [
@@ -227,6 +268,7 @@
                             "currentWidth": 3
                         }
                     ],
+                    "customClass": "mx-1 my-3",
                     "key": "columns1",
                     "type": "columns",
                     "input": false,
