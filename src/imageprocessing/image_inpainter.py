@@ -7,16 +7,11 @@ import os
 import shutil
 from pathlib import Path
 
-from actions_list import ACTION_CLASSES, apply_action, initialize_actions
-from image_panel import image_to_plotly, initialize_images
+from imageprocessing.actions_list import ACTION_CLASSES, apply_action, initialize_actions
+from imageprocessing.image_panel import image_to_plotly, initialize_images
 from PIL import Image, ImageDraw
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
-
-if __name__ == "__main__":
-    from simian.local import Uiformio
-
-    Uiformio("image_inpainter", window_title="Image inpainting demo", debug=True, show_refresh=True)
 
 
 def gui_init(_meta_data: dict) -> dict:
@@ -30,7 +25,7 @@ def gui_init(_meta_data: dict) -> dict:
     form = Form(from_file=__file__)
 
     # Prepend the actions list with the Inpainting actions.
-    from inpaint_actions import ShowInpaintMask, StableDiffusion2Inpaint
+    from imageprocessing.inpaint_actions import ShowInpaintMask, StableDiffusion2Inpaint
 
     ACTION_CLASSES.insert(0, StableDiffusion2Inpaint)
     ACTION_CLASSES.insert(0, ShowInpaintMask)

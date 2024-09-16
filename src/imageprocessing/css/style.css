@@ -1,0 +1,19 @@
+html {
+    /* Overall scaling */
+    font-size: 0.9rem;
+}
+
+.card-body {
+    /* Padding in panels and tabs. */
+    padding: 0.5rem;
+}
+
+.container-fluid {
+    /* Top-level form padding. */
+    padding: 0.5rem;
+}
+
+.form-group {
+    /* Distance between controls (rows) */
+    margin-bottom: 0.5rem;
+}

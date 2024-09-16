@@ -70,7 +70,7 @@
                             },
                             "key": "action",
                             "properties": {
-                                "triggerHappy": "actions_list.action_changed"
+                                "triggerHappy": "imageprocessing.actions_list.action_changed"
                             },
                             "type": "select",
                             "input": true

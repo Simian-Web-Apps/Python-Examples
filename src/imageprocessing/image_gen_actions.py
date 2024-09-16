@@ -1,6 +1,6 @@
 """Image generation actions definitions"""
 
-from actions_list import ImageAction
+from imageprocessing.actions_list import ImageAction
 from PIL import Image
 
 

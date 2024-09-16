@@ -4,16 +4,11 @@ import os
 import shutil
 from pathlib import Path
 
-import image_gen_actions  # Import ensures Image gen actions are available.
-from actions_list import apply_action, initialize_actions
-from image_panel import image_to_plotly, initialize_images
+import imageprocessing.image_gen_actions  # Import ensures Image gen actions are available.
+from imageprocessing.actions_list import apply_action, initialize_actions
+from imageprocessing.image_panel import image_to_plotly, initialize_images
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
-
-if __name__ == "__main__":
-    from simian.local import Uiformio
-
-    Uiformio("image_generator", window_title="Image generation demo", debug=True, show_refresh=True)
 
 
 def gui_init(_meta_data: dict) -> dict:

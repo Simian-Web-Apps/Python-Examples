@@ -7,15 +7,10 @@ import os
 import shutil
 from pathlib import Path
 
-from actions_list import apply_action, initialize_actions
-from image_panel import image_to_plotly, initialize_images
+from imageprocessing.actions_list import apply_action, initialize_actions
+from imageprocessing.image_panel import image_to_plotly, initialize_images
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
-
-if __name__ == "__main__":
-    from simian.local import Uiformio
-
-    Uiformio("image_processor", window_title="Image processing demo", debug=True, show_refresh=True)
 
 
 def gui_init(meta_data: dict) -> dict:

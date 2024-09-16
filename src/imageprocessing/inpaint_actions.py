@@ -2,7 +2,7 @@
 
 from typing import Union
 
-from actions_list import ImageAction
+from imageprocessing.actions_list import ImageAction
 from PIL import Image
 
 
@@ -34,7 +34,7 @@ The number of inference steps controls the number of steps the model takes to ge
             "pipe_key": "prompt",
             "label": "Prompt",
             "datatype": "text",
-            "default": "A Brown and white cat, high resolution",
+            "defaultValue": "A Brown and white cat, high resolution",
             "tooltip": "The prompt to guide the generation of the image, i.e., what you want the model to generate",
             "required": True,
         },
@@ -42,7 +42,7 @@ The number of inference steps controls the number of steps the model takes to ge
             "pipe_key": "negative_prompt ",
             "label": "Negative prompt",
             "datatype": "text",
-            "default": "",
+            "defaultValue": "",
             "tooltip": "The negative prompt to guide the generation of the image, i.e., what you don't want the model to generate",
             "required": False,
         },
@@ -50,7 +50,7 @@ The number of inference steps controls the number of steps the model takes to ge
             "pipe_key": "strength",
             "label": "Strength",
             "datatype": "numeric",
-            "default": 0.9,
+            "defaultValue": 0.9,
             "min": 0,
             "max": 1,
             "numberOfDecimals": 2,
@@ -61,7 +61,7 @@ The number of inference steps controls the number of steps the model takes to ge
             "pipe_key": "num_inference_steps",
             "label": "Number of Inference Steps",
             "datatype": "numeric",
-            "default": 1,  # 10,
+            "defaultValue": 1,  # 10,
             "min": 1,  # 5,
             "max": 100,
             "numberOfDecimals": 0,
@@ -72,7 +72,7 @@ The number of inference steps controls the number of steps the model takes to ge
             "pipe_key": "guidance_scale",
             "label": "Guidance Scale",
             "datatype": "numeric",
-            "default": 7.5,
+            "defaultValue": 7.5,
             "min": 0.0,
             "max": 10.0,
             "numberOfDecimals": 2,
