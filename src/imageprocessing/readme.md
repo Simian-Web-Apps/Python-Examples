@@ -43,14 +43,34 @@ The imageprocessing package contains three Simian web apps for modifying and gen
   - 1 for modifying an image. The default.
   - 2 for inpainting an image in a masked region.
 - Fill the `parameter` attribute with a list of dicts:
-  - The keys of the dict must match the `simian.gui.composed_component.PropertyEditor` row properties. `datatype` and `label` are mandatory.
+  - The keys of the dict must match the `simian.gui.composed_component.PropertyEditor` row properties.
   - extra keys are ignored.
 - Implement the `perform_action` method with inputs:
   - `image_file`:  is the full input image name in the session folder.
   - `target_file`: name of the image file that must be saved to in the action. In the `image_inpainter` app the `target_file` contains the drawn mask image.
   - `*args`: A list of values selected in the Parameter list.
 
-The following snippet adds a numeric parameter to an action, allowing a two decimal value between zero and one to be selected.
+### Parameters
+
+The modify action's parameters' definitions may contain the following keys:
+
+| Key          | Example             | Extra                                              |
+|--------------|---------------------|----------------------------------------------------|
+| datatype     | "numeric"           | Mandatory                                          |
+| label        | "Property name"     | Mandatory                                          |
+| tooltip      | "Tooltip text"      |                                                    |
+| required     | False               |                                                    |
+| defaultValue | "Default value"     | Defaults to a minLength long list of Nones.        |
+| min          | 0                   | Numeric                                            |
+| max          | 2                   | Numeric                                            |
+| decimalLimit | 2                   | Numeric                                            |
+| allowed      | ["A", "B", "C"]     | Select component data source values definition.    |
+| minLength    | 1                   | {1} Scalar, or minimum array length of 0 or more.  |
+| maxLength    | 1                   | {1} Scalar, or maximum array length of 0 or more.  |
+
+The supported data types are: "boolean", "numeric", "select", and "text".
+
+The following example defines a numeric parameter, allowing a two decimal value between zero and one to be selected.
 
 ```python
 {
