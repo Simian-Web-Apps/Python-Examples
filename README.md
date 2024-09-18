@@ -10,7 +10,7 @@ During runtime, the Simian frontend renders the defined web app directly from Py
 
 ### Dependencies
 
-* Simian GUI runs and is tested on Python `3.8` to `3.12`.
+* Simian GUI runs and is tested on Python `3.8` to `3.11`.
 
 ### Installing
 
@@ -121,12 +121,28 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         ```
         pip install scikit-image json2html
         ```
-    * Obtain a (free) API key from [Wikimedia](https://api.wikimedia.org/wiki/Getting_started_with_Wikimedia_APIs).        
+    * Obtain a (free) API key from [Wikimedia](https://api.wikimedia.org/wiki/Getting_started_with_Wikimedia_APIs).
     * Copy the `local_application_data.json.sample` to `local_application_data.json`.
     * Store your user agent as `wikimedia_service_user_agent` and API key as `wikimedia_service_api_key` in `local_application_data.json`.
     * Then start the app using the `run` module
         ```
         python -m run python -m run helloworldwithcoffee.hello_world_with_coffee
+        ```
+
+* **Image processing**: apps for modifying and generating images. [All apps](./src/imageprocessing/README.md) allow for downloading the created figure. When an input image is used, this can be uploaded.
+    * Install additional dependencies
+        ```
+        pip install imageprocessing/requirements.txt
+        ```
+    * Optionally, install image generation dependencies for inpainting and image generation actions.
+        ```
+        pip install imageprocessing/requirements-imagegen.txt
+        ```
+    * Then start the apps using the `run` module
+        ```
+        python -m run imageprocessing.image_processor
+        python -m run imageprocessing.image_inpainter
+        python -m run imageprocessing.image_generator
         ```
 
 ### Running Builder
