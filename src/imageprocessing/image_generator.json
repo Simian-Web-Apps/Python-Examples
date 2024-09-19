@@ -1,0 +1,65 @@
+{
+    "components": [
+        {
+            "title": "Description",
+            "collapsible": true,
+            "key": "descriptionPanel",
+            "type": "panel",
+            "label": "Description",
+            "collapsed": true,
+            "input": false,
+            "tableView": false,
+            "components": [
+                {
+                    "label": "Description",
+                    "className": "lead",
+                    "attrs": [
+                        {
+                            "attr": "",
+                            "value": ""
+                        }
+                    ],
+                    "content": "This example allows for generating an image based on the selected action and settings, modifying the image with consecutive actions, and downloading the resulting image.<br>\n<br>\nThe app contains a custom <code>Composed Component</code> `image_panel` with:<br>\n - a <code>File</code> Component for uploading an image file,<br>\n - a <code>ResultTile</code> Component for downloading the modified image, and<br>\n - two <code>Plotly</code> Components for showing the selected and modified images.<br>\n<br>\nIt also contains a custom <code>Composed Component</code> `actions_list` with:<br>\n - an actions <code>Select</code> component with the image modifications that can be selected, and<br>\n - a Simian <code>PropertyEditor</code> Composed Component for modifying the settings of the selected actions.<br>",
+                    "refreshOnChange": false,
+                    "key": "description",
+                    "type": "htmlelement",
+                    "input": false,
+                    "tableView": false
+                }
+            ]
+        },
+        {
+            "label": "Images",
+            "className": "imageprocessing.image_panel.ImagePanel",
+            "displayHeight": 300,
+            "hideLabel": true,
+            "tableView": false,
+            "key": "image_panel",
+            "type": "customcomposed",
+            "input": true
+        },
+        {
+            "label": "Actions",
+            "className": "imageprocessing.actions_list.ActionList",
+            "displayHeight": 100,
+            "hideLabel": true,
+            "tableView": false,
+            "key": "actionGrid",
+            "type": "customcomposed",
+            "input": true
+        },
+        {
+            "label": "Process",
+            "showValidations": true,
+            "tooltip": "Process the selected file.",
+            "customClass": "mb-2",
+            "disableOnInvalid": true,
+            "tableView": false,
+            "key": "process",
+            "type": "button",
+            "event": "ProcessFiles",
+            "action": "event",
+            "input": true
+        }
+    ]
+}
