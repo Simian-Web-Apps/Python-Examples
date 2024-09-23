@@ -18,7 +18,7 @@ from simian.gui import Form, component, composed_component, utils
 from simian.gui.component import Component
 from simian.gui.composed_component import PropertyEditor
 
-ACTION_CLASSES = []
+ACTION_CLASSES = []  # Is filled at the bottom of the module.
 
 
 class ActionList(composed_component.Builder):
@@ -32,8 +32,6 @@ class ActionList(composed_component.Builder):
 
 def initialize_actions(process_input_image: bool):
     """Initialize function meant for the container that is to receive the action list components."""
-    ACTION_CLASSES.extend(ImageAction.get_subclasses())
-
     # Initialize components.
     Form.componentInitializer(
         actionList=fill_action_list,
@@ -360,3 +358,8 @@ class Mirror(ImageAction):
         with Image.open(image_file) as im:
             new_image = ImageOps.mirror(im)
             new_image.save(target_file)
+
+
+if len(ACTION_CLASSES) == 0:
+    # Ensure all ImageAction subclasses are imported once.
+    ACTION_CLASSES.extend(ImageAction.get_subclasses())
