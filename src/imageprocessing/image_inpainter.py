@@ -107,20 +107,21 @@ def process_files(meta_data: dict, payload: dict) -> dict:
     apply_action(payload, full_fig, target_fig)
 
     # Put the created file in the ResultFile component for the user to download.
-    ResultFile.upload(
-        file_paths=[target_fig],
-        mime_types=["image/*"],
-        meta_data=meta_data,
-        payload=payload,
-        key="resultFile",
-        file_names=[fig],
-    )
+    if os.path.isfile(target_fig):
+        ResultFile.upload(
+            file_paths=[target_fig],
+            mime_types=["image/*"],
+            meta_data=meta_data,
+            payload=payload,
+            key="resultFile",
+            file_names=[fig],
+        )
 
-    # Show the processed file in the web app.
-    plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
-    image_to_plotly(plot_obj, target_fig)
-    utils.setSubmissionData(payload, "resultFigure", plot_obj)
-    utils.setSubmissionData(payload, "hasResult", True)
+        # Show the processed file in the web app.
+        plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
+        image_to_plotly(plot_obj, target_fig)
+        utils.setSubmissionData(payload, "resultFigure", plot_obj)
+        utils.setSubmissionData(payload, "hasResult", True)
 
     # Clear session folder to remove temp figures again.
     shutil.rmtree(temp_target_folder, ignore_errors=True)

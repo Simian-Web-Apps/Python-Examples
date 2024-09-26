@@ -140,6 +140,7 @@ def apply_action(payload: dict, full_fig: str, target_fig: str, parent_key: str 
         try:
             action_dict[action].perform_action(full_fig, target_fig, *inp)
         except Exception as exc:
+            utils.addAlert(payload, f'Unable to apply action "{action}".', "danger")
             logging.error(exc)
         full_fig = target_fig
 
@@ -209,7 +210,7 @@ class Filter(ImageAction):
             "datatype": "numeric",
             "defaultValue": 3,
             "min": 1,
-            "max": 10,
+            "max": 9,
             "required": True,
         },
     ]
