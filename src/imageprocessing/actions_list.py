@@ -24,6 +24,10 @@ ACTION_CLASSES = []  # Is filled at the bottom of the module.
 class ActionList(composed_component.Builder):
     def __init__(self, parent: component.Composed):
         """ActionList constructor."""
+        if len(ACTION_CLASSES) == 0:
+            # Ensure all ImageAction subclasses are imported once.
+            ACTION_CLASSES.extend(ImageAction.get_subclasses())
+
         super().__init__()
 
         # Add components from JSON definition.
@@ -359,8 +363,3 @@ class Mirror(ImageAction):
         with Image.open(image_file) as im:
             new_image = ImageOps.mirror(im)
             new_image.save(target_file)
-
-
-if len(ACTION_CLASSES) == 0:
-    # Ensure all ImageAction subclasses are imported once.
-    ACTION_CLASSES.extend(ImageAction.get_subclasses())
