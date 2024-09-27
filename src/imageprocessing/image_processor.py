@@ -81,6 +81,7 @@ def process_files(meta_data: dict, payload: dict) -> dict:
 
     # Prepare output locations.
     target_fig = str(temp_target_folder / fig)
+    Path(target_fig).unlink(missing_ok=True)
     apply_action(payload, full_fig, target_fig)
 
     # Put the created file in the ResultFile component for the user to download.
