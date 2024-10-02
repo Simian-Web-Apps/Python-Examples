@@ -21,12 +21,16 @@ from simian.gui.composed_component import PropertyEditor
 ACTION_CLASSES = []  # Is filled at the bottom of the module.
 
 
+def _refill_actions():
+    if len(ACTION_CLASSES) == 0:
+        # Ensure all ImageAction subclasses are imported once.
+        ACTION_CLASSES.extend(ImageAction.get_subclasses())
+
+
 class ActionList(composed_component.Builder):
     def __init__(self, parent: component.Composed):
         """ActionList constructor."""
-        if len(ACTION_CLASSES) == 0:
-            # Ensure all ImageAction subclasses are imported once.
-            ACTION_CLASSES.extend(ImageAction.get_subclasses())
+        _refill_actions()
 
         super().__init__()
 
@@ -77,6 +81,7 @@ def fill_no_image_input_action_list(action_list_comp: Component) -> None:
 
 def action_changed(_meta_data: dict, payload: dict) -> dict:
     # An action selection has changed.
+    _refill_actions()
     action_param_list = {x.__name__: x.parameters for x in ACTION_CLASSES}
 
     image_actions = utils.getSubmissionData(payload, "imageProcessingActions")[0]
@@ -121,6 +126,7 @@ def apply_action(payload: dict, full_fig: str, target_fig: str, parent_key: str 
     Returns:
         A summary of the performed actions.
     """
+    _refill_actions()
 
     # Process the action information.
     image_actions = utils.getSubmissionData(payload, "imageProcessingActions", parent=parent_key)[0]
