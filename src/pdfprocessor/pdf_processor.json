@@ -1,6 +1,21 @@
 {
     "components": [
         {
+            "label": "HTML",
+            "attrs": [
+                {
+                    "attr": "",
+                    "value": ""
+                }
+            ],
+            "content": "<li>Select PDFs, set the page ranges and merge into one PDF.</li>",
+            "refreshOnChange": false,
+            "key": "description",
+            "type": "htmlelement",
+            "input": false,
+            "tableView": false
+        },
+        {
             "label": "Columns",
             "columns": [
                 {

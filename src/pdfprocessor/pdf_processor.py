@@ -1,3 +1,5 @@
+"""PDF Merger app."""
+
 import os
 import shutil
 
@@ -5,23 +7,19 @@ from pypdf import PdfWriter, PdfReader
 from simian.gui import Form, component, utils
 
 
-if __name__ == "__main__":
-    from simian.local import Uiformio
-
-    Uiformio("pdf_processor", window_title="PDF Processor", show_refresh=True, debug=True)
-
-
 def gui_init(meta_data: dict) -> dict:
     # Create the form and load the json builder into it.
+    Form.componentInitializer(description=extend_description(mode=meta_data["mode"]))
     form = Form(from_file=__file__)
 
     return {
         "form": form,
-        "navbar": {"title": "PDF Merger", "subtitle": "<small>Simian app</small>"},
+        "navbar": {"title": "PDF Merger", "subtitle": "<small>Simian demo</small>"},
     }
 
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
+    Form.eventHandler(MergeFiles=merge_files)
     callback = utils.getEventFunction(meta_data, payload)
     return callback(meta_data, payload)
 
@@ -29,6 +27,18 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
 def gui_close(meta_data):
     # Remove the session folder on app close.
     shutil.rmtree(utils.getSessionFolder(meta_data), ignore_errors=True)
+
+
+def extend_description(mode):
+    """Extend the description based on the run mode."""
+
+    def inner(comp):
+        if mode == "deployed":
+            comp.content += "<li>Warning: do not upload sensitive information.</li><li>Tip: click the 'Close' button in the top-right corner to close the app AND immediately delete the uploaded and merged files. Remaining files from your session are deleted every 24 hours.</li>"
+        else:
+            comp.content += "<li>Tip: selected and merged files are deleted when you close the app."
+
+    return inner
 
 
 def file_selection_change(meta_data: dict, payload: dict) -> dict:
@@ -46,6 +56,7 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
     ex_files = [f["fullName"] for f in file_list]
 
     for file, meta in zip(selected_pdfs, selected_meta):
+        # Add new files.
         if file not in ex_files:
             pdf_reader = PdfReader(file)
             num_pages = pdf_reader.get_num_pages()
@@ -65,41 +76,26 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
     return payload
 
 
-def MergeFiles(meta_data, payload):
-    # 1 Based indexing in App to zero based in code!
-
+def merge_files(meta_data, payload):
+    """Merge the selected files."""
     file_list, _ = utils.getSubmissionData(payload, "pdfSettings")
 
     merger = PdfWriter()
 
     for file in file_list:
-        input_file = open(file["fullName"], "rb")
-
-        merger.append(fileobj=input_file, pages=(file["firstPage"] - 1, file["lastPage"]))
-
-    # input1 = open("document1.pdf", "rb")
-    # input2 = open("document2.pdf", "rb")
-    # input3 = open("document3.pdf", "rb")
-
-    # # Add the first 3 pages of input1 document to output
-
-    # # Insert the first page of input2 into the output beginning after the second page
-    # merger.merge(position=2, fileobj=input2, pages=(0, 1))
-
-    # # Append entire input3 document to the end of the output document
-    # merger.append(input3)
+        # Append the selected pages of the PDFs to the PDF writer.
+        with open(file["fullName"], "rb") as input_file:
+            merger.append(fileobj=input_file, pages=(file["firstPage"] - 1, file["lastPage"]))
 
     # Write to an output PDF document
     out_file = os.path.join(utils.getSessionFolder(meta_data), "document-output.pdf")
-    output = open(out_file, "wb")
-    merger.write(output)
+    with open(out_file, "wb") as output:
+        merger.write(output)
 
     # Close file descriptors
     merger.close()
-    output.close()
 
-    utils.setSubmissionData(payload, "createdPdf", out_file)
-
+    # Put the merged PDF in the app for the user to download.
     component.ResultFile.upload(
         file_paths=[out_file],
         mime_types=["application/pdf"],
