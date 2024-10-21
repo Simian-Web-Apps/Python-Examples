@@ -36,7 +36,7 @@ def extend_description(mode):
         if mode == "deployed":
             comp.content += "<li>Warning: do not upload sensitive information.</li><li>Tip: click the 'Close' button in the top-right corner to close the app AND immediately delete the uploaded and merged files. Remaining files from your session are deleted every 24 hours.</li>"
         else:
-            comp.content += "<li>Tip: selected and merged files are deleted when you close the app."
+            comp.content += "<li>Tip: selected and merged files available in the session are deleted when you close the app."
 
     return inner
 
