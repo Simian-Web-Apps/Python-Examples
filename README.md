@@ -144,6 +144,16 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         python -m run imageprocessing.image_inpainter
         python -m run imageprocessing.image_generator
         ```
+        
+* **PDF merger**: app for merging (parts of) uploaded PDF files.
+    * Install additional dependencies
+        ```
+        pip install pdfprocessor/requirements.txt
+        ```
+    * Then start the apps using the `run` module
+        ```
+        python -m run pdfprocessor.prd_processor
+        ```
 
 ### Running Builder
 
