@@ -1,0 +1,7 @@
+--extra-index-url https://pypi.simiansuite.com
+simian-gui
+
+isodate
+pycountry
+deep_translator
+google-api-python-client

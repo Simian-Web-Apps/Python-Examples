@@ -1,0 +1,100 @@
+{
+    "components": [
+        {
+            "label": "Has a starting image",
+            "tableView": false,
+            "key": "hasAStartingImage",
+            "hidden": true,
+            "type": "checkbox",
+            "input": true
+        },
+        {
+            "label": "actionList",
+            "key": "actionList",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "actionListNoImageInput",
+            "key": "actionList2",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "<b>Image processing actions</b>",
+            "reorder": true,
+            "addAnother": "Add action",
+            "addAnotherPosition": "bottom",
+            "layoutFixed": false,
+            "enableRowGroups": false,
+            "initEmpty": false,
+            "tableView": false,
+            "defaultValue": [
+                {}
+            ],
+            "validate": {
+                "required": true,
+                "minLength": "1"
+            },
+            "key": "imageProcessingActions",
+            "type": "datagrid",
+            "input": true,
+            "components": [
+                {
+                    "collapsible": true,
+                    "key": "action1",
+                    "type": "container",
+                    "label": "Action",
+                    "collapsed": false,
+                    "input": false,
+                    "tableView": false,
+                    "components": [
+                        {
+                            "label": "Action",
+                            "labelPosition": "left-left",
+                            "widget": "choicesjs",
+                            "tableView": true,
+                            "dataSrc": "custom",
+                            "defaultValue": [
+                                ""
+                            ],
+                            "data": {
+                                "custom": "sub_data = utils.getValue(submission, instance.parent.parent.parent.path); if (rowIndex == 0 && !sub_data.hasAStartingImage) {values = sub_data.actionList2} else {values = sub_data.actionList};"
+                            },
+                            "valueProperty": "value",
+                            "validate": {
+                                "customMessage": "At least one action must be selected.",
+                                "custom": "valid = input.length !== 0 && input[0] !== ''"
+                            },
+                            "key": "action",
+                            "properties": {
+                                "triggerHappy": "imageprocessing.actions_list.action_changed"
+                            },
+                            "type": "select",
+                            "input": true
+                        },
+                        {
+                            "label": "registeredAction",
+                            "key": "registeredAction",
+                            "type": "hidden",
+                            "input": true,
+                            "tableView": false
+                        },
+                        {
+                            "label": "actionSettings",
+                            "className": "simian.gui.composed_component.PropertyEditor",
+                            "displayHeight": 100,
+                            "hideLabel": true,
+                            "tableView": false,
+                            "key": "actionSettings",
+                            "type": "customcomposed",
+                            "input": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

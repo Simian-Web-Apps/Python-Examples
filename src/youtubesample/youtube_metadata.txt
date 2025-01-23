@@ -1,0 +1,76 @@
+Properties:
+ ['kind',
+  'etag',
+  'id',
+  'snippet.publishedAt',
+  'snippet.channelId',
+  'snippet.title',
+  'snippet.description',
+  'snippet.thumbnails.default.url',
+  'snippet.thumbnails.default.width',
+  'snippet.thumbnails.default.height',
+  'snippet.thumbnails.medium.url',
+  'snippet.thumbnails.medium.width',
+  'snippet.thumbnails.medium.height',
+  'snippet.thumbnails.high.url',
+  'snippet.thumbnails.high.width',
+  'snippet.thumbnails.high.height',
+  'snippet.thumbnails.standard.url',
+  'snippet.thumbnails.standard.width',
+  'snippet.thumbnails.standard.height',
+  'snippet.thumbnails.maxres.url',
+  'snippet.thumbnails.maxres.width',
+  'snippet.thumbnails.maxres.height',
+  'snippet.channelTitle',
+  'snippet.categoryId',
+  'snippet.liveBroadcastContent',
+  'snippet.localized.title',
+  'snippet.localized.description',
+  'snippet.defaultAudioLanguage',
+  'contentDetails.duration',
+  'contentDetails.dimension',
+  'contentDetails.definition',
+  'contentDetails.caption',
+  'contentDetails.licensedContent',
+  'contentDetails.projection',
+  'statistics.viewCount',
+  'statistics.likeCount',
+  'statistics.favoriteCount',
+  'statistics.commentCount',
+  'snippet.tags',
+  'snippet.defaultLanguage',
+  'contentDetails.regionRestriction.blocked',
+  'duration']
+
+Categories:
+ '1'	 'Film & Animation'
+ '2'	 'Autos & Vehicles'
+ '10'	 'Music'
+ '15'	 'Pets & Animals'
+ '17'	 'Sports'
+ '18'	 'Short Movies'
+ '19'	 'Travel & Events'
+ '20'	 'Gaming'
+ '21'	 'Videoblogging'
+ '22'	 'People & Blogs'
+ '23'	 'Comedy'
+ '24'	 'Entertainment'
+ '25'	 'News & Politics'
+ '26'	 'Howto & Style'
+ '27'	 'Education'
+ '28'	 'Science & Technology'
+ '30'	 'Movies'
+ '31'	 'Anime/Animation'
+ '32'	 'Action/Adventure'
+ '33'	 'Classics'
+ '34'	 'Comedy'
+ '35'	 'Documentary'
+ '36'	 'Drama'
+ '37'	 'Family'
+ '38'	 'Foreign'
+ '39'	 'Horror'
+ '40'	 'Sci-Fi/Fantasy'
+ '41'	 'Thriller'
+ '42'	 'Shorts'
+ '43'	 'Shows'
+ '44'	 'Trailers'

@@ -69,6 +69,7 @@
                                             "suffix": "[m]",
                                             "applyMaskOn": "change",
                                             "mask": false,
+                                            "disabled": true,
                                             "tableView": false,
                                             "defaultValue": 1024,
                                             "delimiter": false,
@@ -295,7 +296,7 @@
                                                     {
                                                         "label": "Maximum<br>iterations:",
                                                         "tableView": false,
-                                                        "defaultValue": 1000,
+                                                        "defaultValue": 500,
                                                         "min": 500,
                                                         "max": 1500,
                                                         "step": 10,
