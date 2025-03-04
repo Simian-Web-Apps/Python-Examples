@@ -11,9 +11,6 @@ cities = {
 
 # Run this file locally
 if __name__ == "__main__":
-    #    import webview
-    #    webview.create_window("Woah dude!", "index.html")
-    #    webview.start()
     import simian.local
 
     simian.local.Uiformio("googlemaps", window_title="Google Maps", debug=True, show_refresh=True)
