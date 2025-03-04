@@ -10,6 +10,7 @@ var markerObjects = [];
 
 // initMap is now async
 async function initMap(form) {
+    if (!form.form) return;
     // Request libraries when needed, not in the script tag.
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -26,8 +27,6 @@ async function initMap(form) {
 
     if (markers) {
         markers.forEach(function (item) {
-            console.log("Create marker in initMap");
-            console.log(item);
             markerObjects.push(
                 new AdvancedMarkerElement({
                     position: item,
@@ -37,22 +36,15 @@ async function initMap(form) {
         });
     }
 
-    google.maps.event.addListener(this.map, "click", addMarker);
+    google.maps.event.addListener(map, "click", addMarker);
 }
 
 subscribeInitFcn(initMap);
 
-function updateMap(latlng) {
-    latlng = getSimianComponent("centers").getValue()[getSimianComponent("latlng").getValue()];
-    if (latlng && map) {
-        map.setCenter(latlng);
-    }
-}
-
 async function addMarker( event ) {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    if (getSimianComponent("add_marker_on_click_toggle").getValue() || force) {
+    if (getSimianComponent("add_marker_on_click_toggle").getValue()) {
         markerObjects.push(
             new AdvancedMarkerElement({
                 position: event.latLng,
@@ -63,6 +55,13 @@ async function addMarker( event ) {
         markersComponent = getSimianComponent("markers");
         markersComponent.getValue().push(event.latLng);
         markersComponent.triggerChange(); // array or object value by reference
+    }
+}
+
+function updateMap(latlng) {
+    latlng = getSimianComponent("centers").getValue()[getSimianComponent("latlng").getValue()];
+    if (latlng && map) {
+        map.setCenter(latlng);
     }
 }
 
@@ -81,29 +80,23 @@ function getSimianData() {
     return window.angularComponentReference.component.currentForm.submission.data;
 }
 
-
-// function subscribeInitMap() {
-//     out = window.angularComponentReference.component;
-//     if (out) {
-//         if (!out.refreshForm.observers.find((x) => x.destination.partialObserver.next.toString() === '(form) => initMap(form)')) {
-//             out.refreshForm.subscribe((form) => initMap(form));
-//         }
-//     } else {
-//         requestAnimationFrame(() => subscribeInitMap())
-//     }
-// }
-
-function subscribeInitFcn(initFcn) {
+function subscribeInitFcn(customFcn) {
     out = window.angularComponentReference.component;
     if (out) {
-        if (!out.refreshForm.observers.find((x) => x.destination.partialObserver.next.toString() === initFcn.name)) {
-            out.refreshForm.subscribe(initFcn);
+        if (!out.refreshForm.observers.find((x) => x.destination.partialObserver.next.toString() === '(form) => initFcn(form, customFcn)')) {
+            out.refreshForm.subscribe((form) => initFcn(form, customFcn));
         }
     } else {
         requestAnimationFrame(() => subscribeInitFcn())
     }
 }
  
+function initFcn(form, customFcn) {
+    if (form.form) {
+        customFcn(form);
+    }
+}
+
 function stringifyMarkers(markers) {
     out = "";
     if (markers) {
