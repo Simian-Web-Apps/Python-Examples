@@ -10,7 +10,6 @@ var markerObjects = [];
 
 // initMap is now async
 async function initMap(form) {
-    if (!form.form) return;
     // Request libraries when needed, not in the script tag.
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -39,7 +38,34 @@ async function initMap(form) {
     google.maps.event.addListener(map, "click", addMarker);
 }
 
-subscribeInitFcn(initMap);
+async function updateMap(form) {
+    // Request libraries when needed, not in the script tag.
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    latlng = await new google.maps.LatLng(form.submission.data.centers[form.submission.data.latlng]);
+    map.setCenter(latlng);
+
+    // Removing all markers rom map, and then recreating all from list.
+    // This could be done in a smarter way.
+    markerObjects.forEach(function (item) {
+        item.setMap(null);
+    });
+    markerObjects = [];
+
+    markers = form.submission.data.markers;
+    if (markers) {
+        markers.forEach(function (item) {
+            markerObjects.push(
+                new AdvancedMarkerElement({
+                    position: item,
+                    map: map // put the handle of your map here
+                })
+            );
+        });
+    }
+}
+
+subscribeInitFcn(initMap, updateMap);
 
 async function addMarker( event ) {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -55,45 +81,53 @@ async function addMarker( event ) {
         markersComponent = getSimianComponent("markers");
         markersComponent.getValue().push(event.latLng);
         markersComponent.triggerChange(); // array or object value by reference
+
+        getSimianForm().setPristine(false);
     }
 }
 
-function updateMap(latlng) {
-    latlng = getSimianComponent("centers").getValue()[getSimianComponent("latlng").getValue()];
-    if (latlng && map) {
-        map.setCenter(latlng);
-    }
-}
-
-function purgeMarker() {
+function purgeMarker(data) {
     if (markerObjects.length) {
         removedMarkerObject = markerObjects.pop();
         removedMarkerObject.setMap(null);
     }
+    data['markers'].pop();
+    window.angularComponentReference.component.currentForm.setPristine(false);
+}
+
+function getSimianForm() {
+    return window.angularComponentReference.component.currentForm;
 }
 
 function getSimianComponent(key) {
-    return window.angularComponentReference.component.currentForm.getComponent(key);
+    return getSimianForm().getComponent(key);
 }
 
 function getSimianData() {
-    return window.angularComponentReference.component.currentForm.submission.data;
+    return getSimianForm().submission.data;
 }
 
-function subscribeInitFcn(customFcn) {
+function subscribeInitFcn(customInitFcn, customUpdateFcn) {
     out = window.angularComponentReference.component;
     if (out) {
-        if (!out.refreshForm.observers.find((x) => x.destination.partialObserver.next.toString() === '(form) => initFcn(form, customFcn)')) {
-            out.refreshForm.subscribe((form) => initFcn(form, customFcn));
+        if (!out.refreshForm.observers.find((x) => x.destination.partialObserver.next.toString() === '(form) => initFcn(form, customInitFcn, customUpdateFcn)')) {
+            out.refreshForm.subscribe((form) => initFcn(form, customInitFcn, customUpdateFcn));
         }
     } else {
         requestAnimationFrame(() => subscribeInitFcn())
     }
 }
  
-function initFcn(form, customFcn) {
+async function initFcn(form, customInitFcn, customUpdateFcn) {
+    //console.log(JSON.stringify(form, undefined, 2));
+
     if (form.form) {
-        customFcn(form);
+        //console.log('INIT');
+        await customInitFcn(form);
+    }
+    if (form.submission && (Object.keys(form.submission.data).length > 0)) {
+        //console.log("UPDATE");
+        await customUpdateFcn(form);
     }
 }
 

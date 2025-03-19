@@ -3,11 +3,15 @@ from os import path
 
 from simian.gui import Form, component, component_properties, utils  # noqa: F401
 
+examples_url = "https://github.com/Simian-Web-Apps/Python-Examples/"
+
 cities = {
     "amsterdam": {"lat": 52.3676, "lng": 4.9041},
     "munich": {"lat": 48.1293954, "lng": 11.556663},
     "sydney": {"lat": -33.865143, "lng": 151.209900},
 }
+
+defaultCenter = "sydney"
 
 # Run this file locally
 if __name__ == "__main__":
@@ -38,8 +42,6 @@ def gui_init(meta_data: dict) -> dict:
     form.addCustomJavaScript(file_content)
 
     # Base payload
-    examples_url = "https://github.com/Simian-Web-Apps/Python-Examples/"
-
     payload = {
         "form": form,
         "navbar": {
@@ -51,16 +53,17 @@ def gui_init(meta_data: dict) -> dict:
         "showChanged": True,
     }
 
-    # Hidden component to store
+    # Hidden components to store data
     LatLng = component.Hidden("latlng", form)
-    LatLng.defaultValue = "sydney"
+    LatLng.defaultValue = defaultCenter
 
     Markers = component.Hidden("markers", form)
-    Markers.defaultValue = [{"lat": -33.865143, "lng": 151.209900}]
+    Markers.defaultValue = [cities["sydney"]]
 
     Centers = component.Hidden("centers", form)
     Centers.defaultValue = cities
 
+    # The visble form (layout)
     container = component.Container("container", form)
     container.addCustomClass("container")
 
@@ -71,12 +74,11 @@ def gui_init(meta_data: dict) -> dict:
         [meta_data["application_data"]["google_maps_map_name"], "height:50vh; min-height: 10em;"],
     )
     htmlMap.addCustomClass("mb-3", "bg-light", "w-100")
-    htmlMap.calculateValue = "updateMap();"
 
     addMarkersOnClickToggle = component.Toggle("add_marker_on_click_toggle")
     addMarkersOnClickToggle.label = "Add marker on map-click"
     addMarkersOnClickToggle.hideLabel = True
-    addMarkersOnClickToggle.defaultValue = False
+    addMarkersOnClickToggle.defaultValue = True
     addMarkersOnClickToggle.leftLabel = "Markers"
     addMarkersOnClickToggle.rightLabel = ""
 
@@ -86,16 +88,27 @@ def gui_init(meta_data: dict) -> dict:
         cityButton.addCustomClass("btn-block")
         cityButton.label = city.capitalize()
         cityButton.setEvent(city)
+
         cityButtons.append(cityButton)
 
-    cols = component.Columns("columns", container)
-    cols.setContent([addMarkersOnClickToggle] + cityButtons, [3, 3, 3, 3])
+    cols1 = component.Columns("columns", container)
+    cols1.setContent([addMarkersOnClickToggle] + cityButtons, [3, 3, 3, 3])
 
-    purgeMarkerButton = component.Button("purge_marker_button", container)
+    # button with front-end action only
+    purgeMarkerButton = component.Button("purge_marker_button")
     purgeMarkerButton.label = "Purge Last Added Marker"
-    purgeMarkerButton.addCustomClass("btn-block btn-danger")
+    purgeMarkerButton.addCustomClass("btn-block btn-warning")
     purgeMarkerButton.action = "custom"
-    purgeMarkerButton.custom = "purgeMarker(); data['markers'].pop();"
+    purgeMarkerButton.custom = "purgeMarker(data);"
+
+    resetMapButton = component.Button("reset_map_button")
+    resetMapButton.label = "Reset Map"
+    resetMapButton.addCustomClass("btn-block btn-danger")
+    resetMapButton.action = "event"
+    resetMapButton.event = "reset_map"
+
+    cols2 = component.Columns("columns", container)
+    cols2.setContent([purgeMarkerButton, resetMapButton], [6, 6])
 
     htmlMarkers = component.HtmlElement("google_maps_markers_html", container)
     htmlMarkers.tag = "pre"
@@ -115,6 +128,8 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     for key in cities.keys():
         Form.eventHandler(**{key: setCenter(key)})
 
+    Form.eventHandler(reset_map=resetMap)
+
     callback = utils.getEventFunction(meta_data, payload)
 
     # Remove the "form has changes badge".
@@ -123,9 +138,17 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     return callback(meta_data, payload)
 
 
+def resetMap(meta_data: dict, payload: dict) -> dict:
+    utils.setSubmissionData(payload, "markers", [cities[defaultCenter]])
+    utils.setSubmissionData(payload, "latlng", defaultCenter)
+
+    return payload
+
+
 def setCenter(latlng: dict) -> callable:
     def inner(meta_data: dict, payload: dict) -> dict:
         utils.setSubmissionData(payload, "latlng", latlng)
+
         return payload
 
     return inner
