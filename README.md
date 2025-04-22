@@ -132,7 +132,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
 * **Image processing**: apps for modifying and generating images. [All apps](./src/imageprocessing/README.md) allow for downloading the created figure. When an input image is used, this can be uploaded.
     * Install additional dependencies
         ```
-        pip install imageprocessing/requirements.txt
+        pip install -r imageprocessing/requirements.txt
         ```
     * Optionally, install image generation dependencies for inpainting and image generation actions.
         ```
@@ -148,7 +148,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
 * **PDF merger**: app for merging (parts of) uploaded PDF files.
     * Install additional dependencies
         ```
-        pip install pdfprocessor/requirements.txt
+        pip install -r pdfprocessor/requirements.txt
         ```
     * Then start the apps using the `run` module
         ```
