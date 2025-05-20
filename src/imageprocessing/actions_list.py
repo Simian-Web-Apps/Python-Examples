@@ -102,6 +102,8 @@ def action_changed(_meta_data: dict, payload: dict) -> dict:
 
             row["actionSettings"] = PropertyEditor.prepare_values(params)
 
+    utils.setSubmissionData(payload, "imageProcessingActions", image_actions)
+
     return payload
 
 
