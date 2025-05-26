@@ -10,7 +10,7 @@ During runtime, the Simian frontend renders the defined web app directly from Py
 
 ### Dependencies
 
-* Simian GUI runs and is tested on Python `3.8` to `3.11`.
+* Simian GUI runs and is tested on Python `3.8` to `3.12`.
 
 ### Installing
 
