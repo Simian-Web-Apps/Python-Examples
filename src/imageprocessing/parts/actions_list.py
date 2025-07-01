@@ -351,7 +351,7 @@ class InvertColours(ImageAction):
 
 
 class Mirror(ImageAction):
-    label = "Flip image horizonatally"
+    label = "Flip image horizontally"
     summary = "Mirrored"
     parameters = []
 
