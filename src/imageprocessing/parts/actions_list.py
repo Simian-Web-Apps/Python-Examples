@@ -21,9 +21,17 @@ from simian.gui.composed_component import PropertyEditor
 ACTION_CLASSES = []  # Is filled at the bottom of the module.
 
 
+def _refill_actions():
+    if len(ACTION_CLASSES) == 0:
+        # Ensure all ImageAction subclasses are imported once.
+        ACTION_CLASSES.extend(ImageAction.get_subclasses())
+
+
 class ActionList(composed_component.Builder):
     def __init__(self, parent: component.Composed):
         """ActionList constructor."""
+        _refill_actions()
+
         super().__init__()
 
         # Add components from JSON definition.
@@ -73,6 +81,7 @@ def fill_no_image_input_action_list(action_list_comp: Component) -> None:
 
 def action_changed(_meta_data: dict, payload: dict) -> dict:
     # An action selection has changed.
+    _refill_actions()
     action_param_list = {x.__name__: x.parameters for x in ACTION_CLASSES}
 
     image_actions = utils.getSubmissionData(payload, "imageProcessingActions")[0]
@@ -119,6 +128,7 @@ def apply_action(payload: dict, full_fig: str, target_fig: str, parent_key: str 
     Returns:
         A summary of the performed actions.
     """
+    _refill_actions()
 
     # Process the action information.
     image_actions = utils.getSubmissionData(payload, "imageProcessingActions", parent=parent_key)[0]
@@ -142,6 +152,7 @@ def apply_action(payload: dict, full_fig: str, target_fig: str, parent_key: str 
         try:
             action_dict[action].perform_action(full_fig, target_fig, *inp)
         except Exception as exc:
+            utils.addAlert(payload, f'Unable to apply action "{action}".', "danger")
             logging.error(exc)
         full_fig = target_fig
 
@@ -211,7 +222,7 @@ class Filter(ImageAction):
             "datatype": "numeric",
             "defaultValue": 3,
             "min": 1,
-            "max": 10,
+            "max": 9,
             "required": True,
         },
     ]
@@ -360,8 +371,3 @@ class Mirror(ImageAction):
         with Image.open(image_file) as im:
             new_image = ImageOps.mirror(im)
             new_image.save(target_file)
-
-
-if len(ACTION_CLASSES) == 0:
-    # Ensure all ImageAction subclasses are imported once.
-    ACTION_CLASSES.extend(ImageAction.get_subclasses())

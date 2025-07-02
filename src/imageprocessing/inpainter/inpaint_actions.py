@@ -98,9 +98,8 @@ The number of inference steps controls the number of steps the model takes to ge
         )
 
         if StableDiffusion2Inpaint.pipeline is None:
-            pipe = StableDiffusionInpaintPipeline.from_single_file(
-                r"C:\Files\TASTI\Models\512-inpainting-ema.ckpt",
-                torch_dtype=torch.float32,
+            pipe = StableDiffusionInpaintPipeline.from_pretrained(
+                "runwayml/stable-diffusion-inpainting", torch_dtype=torch.float16
             )
 
             pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
