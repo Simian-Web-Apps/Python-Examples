@@ -30,7 +30,7 @@
         },
         {
             "label": "Images",
-            "className": "imageprocessing.image_panel.ImagePanel",
+            "className": "imageprocessing.parts.image_panel.ImagePanel",
             "displayHeight": 300,
             "hideLabel": true,
             "tableView": false,
@@ -40,7 +40,7 @@
         },
         {
             "label": "Actions",
-            "className": "imageprocessing.actions_list.ActionList",
+            "className": "imageprocessing.parts.actions_list.ActionList",
             "displayHeight": 100,
             "hideLabel": true,
             "tableView": false,

@@ -4,9 +4,8 @@ import os
 import shutil
 from pathlib import Path
 
-import imageprocessing.image_gen_actions  # Import ensures Image gen actions are available.
-from imageprocessing.actions_list import apply_action, initialize_actions
-from imageprocessing.image_panel import image_to_plotly, initialize_images
+from imageprocessing.parts.actions_list import apply_action, initialize_actions
+from imageprocessing.parts.image_panel import image_to_plotly, initialize_images
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
 
@@ -22,6 +21,9 @@ def gui_init(_meta_data: dict) -> dict:
         ),
     )
     form = Form(from_file=__file__)
+
+    with open(Path(__file__).parents[1] / "css" / "style.css", "r") as css:
+        form.addCustomCss(css.read())
 
     return {
         "form": form,

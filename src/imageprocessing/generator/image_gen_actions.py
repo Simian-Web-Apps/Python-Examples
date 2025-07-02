@@ -1,6 +1,6 @@
 """Image generation actions definitions"""
 
-from imageprocessing.actions_list import ImageAction
+from imageprocessing.parts.actions_list import ImageAction, ACTION_CLASSES
 from PIL import Image
 
 
@@ -98,3 +98,7 @@ The number of inference steps controls the number of steps the model takes to ge
         ).images[0]
 
         new_image.save(target_file)
+
+
+# Extend the list of Action classes with tthe set defined in this module.
+ACTION_CLASSES.extend(set(ImageAction.get_subclasses()) - set(ACTION_CLASSES))

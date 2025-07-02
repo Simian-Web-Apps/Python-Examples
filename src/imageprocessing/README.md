@@ -5,37 +5,37 @@ The imageprocessing package contains three Simian web apps for modifying and gen
 
 ## Apps
 
-- `image_processor`
+- `processor.image_processor`
 
   - Upload an image, select and parametrize `Pillow` image modification actions, and download the processed image.
 
-- `image_inpainter`
+- `inpainter.image_inpainter`
   
   - Allows for drawing a white mask on the image where the image can be modified. The drawn mask is made available to the processing action as a separate image.
 
-- `image_generator`
+- `generator.image_generator`
 
   - No input image is used, as the base image is generated based on action settings.
   - The name of the output file must be specified.
 
 ## Actions
 
-- `actions_list.py`
+- `parts.actions_list.py`
 
   - Defines as list of Python Pillow modifications
   - Available in all apps as (post)processing actions.
 
-- `inpaint_actions.py`
+- `inpainter.inpaint_actions.py`
 
   - Defines a list of actions where an area of an image is selected for processing.
 
-- `image_gen_actions.py`
+- `generator.image_gen_actions.py`
 
   - Defines as list of actions where an image is generated based on the given settings.
 
 ## Adding an action
 
-- Create a subclass of the `imageprocessing.actions_list.ImageAction` class.
+- Create a subclass of the `imageprocessing.parts.actions_list.ImageAction` class.
 - Set the `label` attribute that is shown in the actions dropdown list.
 - (Optionally) set the `summary` attribute.
 - Set the `nr_image_inputs` attribute to:
