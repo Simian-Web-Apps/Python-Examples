@@ -1,6 +1,6 @@
 """Image generation actions definitions"""
 
-from imageprocessing.parts.actions_list import ImageAction, ACTION_CLASSES
+from imageprocessing.parts.actions_list import ImageAction
 from PIL import Image
 
 
@@ -75,8 +75,8 @@ The number of inference steps controls the number of steps the model takes to ge
         from diffusers import DPMSolverMultistepScheduler, StableDiffusionPipeline
 
         if StableDiffusion2.pipeline is None:
-            pipe = StableDiffusionPipeline.from_single_file(
-                r"C:\Files\TASTI\Models\v2-1_768-ema-pruned.ckpt", torch_dtype=torch.float32
+            pipe = StableDiffusionPipeline.from_pretrained(
+                "stabilityai/stable-diffusion-3.5", torch_dtype=torch.float16
             )
 
             pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
@@ -98,7 +98,3 @@ The number of inference steps controls the number of steps the model takes to ge
         ).images[0]
 
         new_image.save(target_file)
-
-
-# Extend the list of Action classes with tthe set defined in this module.
-ACTION_CLASSES.extend(set(ImageAction.get_subclasses()) - set(ACTION_CLASSES))
