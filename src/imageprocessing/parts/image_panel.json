@@ -126,7 +126,7 @@
                             "tableView": false,
                             "clearOnHide": false,
                             "key": "resultFile",
-                            "customConditional": "show = (data.image_panel?.hasResult == true) && (data.image_panel?.resultFile != undefined)",
+                            "customConditional": "show = (row.hasResult == true) && (row.resultFile != undefined)",
                             "type": "customresultfile",
                             "input": true
                         }

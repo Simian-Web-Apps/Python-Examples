@@ -12,8 +12,7 @@ from simian.gui.component import File, ResultFile
 
 
 def gui_init(_meta_data: dict) -> dict:
-    # Create the form and load the json builder into it.
-
+    """Initialize the app."""
     # Initialize components.
     Form.componentInitializer(
         actionGrid=initialize_actions(process_input_image=False),
@@ -31,11 +30,15 @@ def gui_init(_meta_data: dict) -> dict:
         "navbar": {
             "title": "Image generation",
             "subtitle": "<small>Simian demo</small>",
+            "logo": utils.encodeImage(
+                os.path.join(Path(__file__).parents[1] / "logo_tasti_light.png")
+            ),
         },
     }
 
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
+    """Process app events."""
     Form.eventHandler(
         FileSelectionChange=file_selection_change,
         ProcessFiles=process_files,

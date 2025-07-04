@@ -1,6 +1,6 @@
 # Image generation apps
 
-The imageprocessing package contains three Simian web apps for modifying and generating images and supporting modules. All apps allow for downloading the created figure. When an input image is used, this can be uploaded.
+The imageprocessing package contains four Simian web apps for modifying and generating images and supporting modules. All apps allow for downloading the created figure. When an input image is used, this can be uploaded.
 
 
 ## Apps
@@ -17,6 +17,10 @@ The imageprocessing package contains three Simian web apps for modifying and gen
 
   - No input image is used, as the base image is generated based on action settings.
   - The name of the output file must be specified.
+  
+- `pytorch.image_transform`
+
+  - Upload an image, select the combination method, select and parameterize `PyTorch` vision transforms, and download the processed image.
 
 ## Actions
 

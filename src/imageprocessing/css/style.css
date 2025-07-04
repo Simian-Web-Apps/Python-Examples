@@ -3,6 +3,14 @@ html {
     font-size: 0.91rem;
 }
 
+.form-wrapper {
+    /*Make the form narrower*/
+    width: 1000px;
+    justify-self: center;
+    margin-right: auto;
+    margin-left: auto;
+}
+
 .card-body {
     /* Padding in panels and tabs. */
     padding: 0.5rem;
