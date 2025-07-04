@@ -1,0 +1,166 @@
+{
+    "components": [
+        {
+            "label": "AvailableTransforms",
+            "key": "availableTransforms",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "methods",
+            "key": "availableMethods",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "Combination method",
+            "labelPosition": "left-left",
+            "widget": "choicesjs",
+            "tableView": true,
+            "dataSrc": "custom",
+            "data": {
+                "custom": "sub_data = utils.getValue(submission, instance.parent.path); values = sub_data.availableMethods"
+            },
+            "defaultValue": "Compose",
+            "valueProperty": "value",
+            "validate": {
+                "required": true
+            },
+            "key": "combinationMethod",
+            "type": "select",
+            "input": true,
+            "properties": {
+                "triggerHappy": "imageprocessing.parts.transform.NewContainer"
+            }
+        },
+        {
+            "key": "probType",
+            "type": "hidden",
+            "defaultValue": "None",
+            "input": true,
+            "tableView": false,
+            "label": ""
+        },
+        {
+            "label": "Application probability",
+            "labelPosition": "left-left",
+            "mask": false,
+            "tableView": false,
+            "defaultValue": 1,
+            "delimiter": false,
+            "requireDecimal": false,
+            "inputFormat": "plain",
+            "truncateMultipleSpaces": false,
+            "validate": {
+                "min": 0,
+                "max": 1
+            },
+            "validateWhenHidden": false,
+            "key": "overallProbability",
+            "customConditional": "sub_data = utils.getValue(submission, instance.parent.path); show = sub_data?.probType == 'Overall'",
+            "type": "number",
+            "decimalLimit": 2,
+            "input": true
+        },
+        {
+            "label": "Tranforms",
+            "reorder": true,
+            "addAnother": "Add transform",
+            "addAnotherPosition": "bottom",
+            "layoutFixed": false,
+            "enableRowGroups": false,
+            "initEmpty": false,
+            "hideLabel": true,
+            "tableView": false,
+            "defaultValue": [
+                {
+                    "transform": {
+                        "selectedTransformer": "",
+                        "registeredTransform": "",
+                        "tranformer_doc": ""
+                    }
+                }
+            ],
+            "key": "tranforms",
+            "type": "datagrid",
+            "input": true,
+            "components": [
+                {
+                    "label": "Transform",
+                    "hideLabel": false,
+                    "tableView": false,
+                    "key": "transform",
+                    "type": "container",
+                    "input": true,
+                    "components": [
+                        {
+                            "label": "Transformer",
+                            "labelPosition": "left-left",
+                            "widget": "html5",
+                            "tooltip": "{{row.tranformer_doc}}",
+                            "tableView": true,
+                            "dataSrc": "custom",
+                            "data": {
+                                "custom": "sub_data = utils.getValue(submission, instance.parent.parent.parent.path); values = sub_data.availableTransforms"
+                            },
+                            "valueProperty": "value",
+                            "validate": {
+                                "required": true
+                            },
+                            "key": "selectedTransformer",
+                            "properties": {
+                                "triggerHappy": "imageprocessing.parts.transform.NewTransformer"
+                            },
+                            "type": "select",
+                            "input": true
+                        },
+                        {
+                            "label": "Application probability",
+                            "labelPosition": "left-left",
+                            "mask": false,
+                            "tableView": false,
+                            "defaultValue": 1,
+                            "delimiter": false,
+                            "requireDecimal": false,
+                            "inputFormat": "plain",
+                            "truncateMultipleSpaces": false,
+                            "clearOnHide": false,
+                            "validateWhenHidden": false,
+                            "key": "applicationProbability",
+                            "customConditional": "sub_data = utils.getValue(submission, instance.parent.parent.parent.path); show = sub_data?.probType == 'PerTransform'",
+                            "type": "number",
+                            "decimalLimit": 2,
+                            "input": true
+                        },
+                        {
+                            "label": "registered transform",
+                            "key": "registeredTransform",
+                            "type": "hidden",
+                            "input": true,
+                            "tableView": false
+                        },
+                        {
+                            "label": "docstring",
+                            "key": "tranformer_doc",
+                            "type": "hidden",
+                            "input": true,
+                            "tableView": false
+                        },
+                        {
+                            "label": "Parameters",
+                            "className": "simian.gui.composed_component.PropertyEditor",
+                            "displayHeight": 100,
+                            "hideLabel": true,
+                            "tableView": false,
+                            "key": "parameters",
+                            "type": "customcomposed",
+                            "input": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

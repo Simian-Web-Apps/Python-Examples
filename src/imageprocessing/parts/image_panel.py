@@ -102,6 +102,10 @@ def setup_plotly(allow_draw: bool = False) -> Callable:
 
 def image_to_plotly(plot_obj, selected_figure: str) -> None:
     """Put image file in Plotly background."""
+    if plot_obj.figure is None:
+        # When no figure loaded from the backend, insert an empty one for later use.
+        plot_obj.figure = go.Figure()
+
     if len(selected_figure) == 0:
         img_width = img_height = 1
         image_setup = [{"source": None}]
