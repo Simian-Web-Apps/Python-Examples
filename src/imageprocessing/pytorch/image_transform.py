@@ -98,12 +98,15 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
 
             if isinstance(new_image, tuple):
                 new_image = new_image[0]
-            elif not isinstance(new_image, Image.Image):
-                utils.addAlert(
-                    payload,
-                    "Transform sequence should return a Pillow image. Add a ToPILImage Transform.",
-                    "warning",
-                )
+
+            if not isinstance(new_image, Image.Image):
+                # new "Image" cannot be shown in the UI nor saved. Attempt to convert it to Image.
+                from imageprocessing.parts.transform import TRANSFORMERS
+
+                mode = [None, "L", None, "RGB", "RGBA"][new_image.size()[0]]
+
+                to_pil_transformer = TRANSFORMERS["PyTorch_Vision v2"]["ToPILImage"](mode)
+                new_image = to_pil_transformer(new_image)
 
             # Save the created figure in the session folder. and put it in the ResultFile.
             target_fig = str(sessionFolder / fig)
