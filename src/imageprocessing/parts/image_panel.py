@@ -72,7 +72,10 @@ def setup_plotly(allow_draw: bool = False) -> Callable:
 
     def inner(plot_obj):
         plot_obj.figure = go.Figure()
-        plot_obj.figure.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+        plot_obj.figure.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}, dragmode=False)
+        plot_obj.defaultValue["config"].update(
+            {"modeBarButtonsToRemove": ["pan", "zoom", "zoomin", "zoomout"]}
+        )
 
         if allow_draw:
             # Plotly component should have drawing options enabled.
