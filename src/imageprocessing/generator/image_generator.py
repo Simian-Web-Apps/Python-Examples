@@ -4,6 +4,7 @@ import os
 import shutil
 from pathlib import Path
 
+import imageprocessing.generic
 import imageprocessing.generator.image_gen_actions  # Import ensures Image gen actions are available.
 from imageprocessing.parts.actions_list import apply_action, initialize_actions
 from imageprocessing.parts.image_panel import image_to_plotly, initialize_images
@@ -21,18 +22,14 @@ def gui_init(_meta_data: dict) -> dict:
         ),
     )
     form = Form(from_file=__file__)
-
-    with open(Path(__file__).parents[1] / "css" / "style.css", "r") as css:
-        form.addCustomCss(css.read())
+    form.addCustomCss(imageprocessing.generic.get_css())
 
     return {
         "form": form,
         "navbar": {
             "title": "Image generation",
             "subtitle": "<small>Simian demo</small>",
-            "logo": utils.encodeImage(
-                os.path.join(Path(__file__).parents[1] / "logo_tasti_light.png")
-            ),
+            "logo": imageprocessing.generic.get_tasti_logo(),
         },
     }
 

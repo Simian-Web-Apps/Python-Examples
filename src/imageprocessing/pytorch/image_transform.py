@@ -9,6 +9,7 @@ from PIL import Image
 import traceback
 
 from simian.gui import Form, component, utils
+import imageprocessing.generic
 import imageprocessing.parts.image_panel
 
 if __name__ == "__main__":
@@ -24,18 +25,14 @@ def gui_init(meta_data: dict) -> dict:
         image_panel=imageprocessing.parts.image_panel.initialize_images(user_image_io=True)
     )
     form = Form(from_file=__file__)
-
-    with open(Path(__file__).parents[1] / "css" / "style.css", "r") as css:
-        form.addCustomCss(css.read())
+    form.addCustomCss(imageprocessing.generic.get_css())
 
     return {
         "form": form,
         "navbar": {
             "title": "PyTorch Vision Transforms",
             "subtitle": "<small>Simian demo</small>",
-            "logo": utils.encodeImage(
-                os.path.join(Path(__file__).parents[1] / "logo_tasti_light.png")
-            ),
+            "logo": imageprocessing.generic.get_tasti_logo(),
         },
     }
 

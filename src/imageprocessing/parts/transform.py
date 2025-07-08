@@ -272,7 +272,6 @@ def get_params(label, default, annotation, par_doc) -> Tuple[List[dict], dict]:
         type_str = "select"
         extra_options = extra_options | {"allowed": TORCH_TYPES}
         default = str(default)
-
     elif "float" in annotation:
         type_str = "numeric"
     elif "int" in annotation:
@@ -321,16 +320,22 @@ def _split_docs(doc_str: str, arg_names) -> dict:
     if doc_str is None:
         return {}
 
+    # Split the docstring on the Args, Returns and Raises keywords. First part is the main docstring
+    # The part after Args: contains the input arguments descriptions.
     splits = re.split("(Args:\n|Returns:\n|Raises:\n)", doc_str)
     docs = {"main": splits[0]}
 
     if "Args:\n" in splits:
+        # Split the input arguments docstring block on the names of the input arguments that were
+        # identified with the inspect module.
         idxArgs = splits.index("Args:\n")
-
         arg_strs = re.split(
-            "(\n\s+" + "\s+\(|\n\s+".join(arg_names) + "\s+\()", "Args:\n" + splits[idxArgs + 1]
+            "(\n\s+" + "\s+\(|\n\s+".join(arg_names) + "\s+\()",
+            "Args:\n" + splits[idxArgs + 1],
         )
 
+        # Update the docs dict with the input arguments' names as keys and their corresponding doc
+        # string parts as values.
         docs.update(
             {
                 re.search("\w+", k).group(): k.strip() + re.sub("\n", "", v)
