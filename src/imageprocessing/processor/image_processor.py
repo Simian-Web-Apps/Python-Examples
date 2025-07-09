@@ -1,38 +1,41 @@
-"""Simian image generation web app."""
+"""Simian image processing web app.
+
+Uses the Python Pillow library to modify images provided by the user.
+"""
 
 import os
 import shutil
 from pathlib import Path
 
-import imageprocessing.image_gen_actions  # Import ensures Image gen actions are available.
-from imageprocessing.actions_list import apply_action, initialize_actions
-from imageprocessing.image_panel import image_to_plotly, initialize_images
+import imageprocessing.generic
+from imageprocessing.parts.actions_list import apply_action, initialize_actions
+from imageprocessing.parts.image_panel import image_to_plotly, initialize_images
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
 
 
-def gui_init(_meta_data: dict) -> dict:
-    # Create the form and load the json builder into it.
-
+def gui_init(meta_data: dict) -> dict:
+    """Initialize the app."""
     # Initialize components.
     Form.componentInitializer(
-        actionGrid=initialize_actions(process_input_image=False),
-        image_panel=initialize_images(
-            user_image_io=True, input_label="None", use_input_image=False
-        ),
+        actionGrid=initialize_actions(process_input_image=True),
+        image_panel=initialize_images(user_image_io=True),
     )
     form = Form(from_file=__file__)
+    form.addCustomCss(imageprocessing.generic.get_css())
 
     return {
         "form": form,
         "navbar": {
-            "title": "Image generation",
+            "title": "Image processing",
             "subtitle": "<small>Simian demo</small>",
+            "logo": imageprocessing.generic.get_tasti_logo(),
         },
     }
 
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
+    """Process app events."""
     Form.eventHandler(
         FileSelectionChange=file_selection_change,
         ProcessFiles=process_files,
@@ -74,16 +77,15 @@ def process_files(meta_data: dict, payload: dict) -> dict:
     os.makedirs(temp_target_folder, exist_ok=True)
 
     # Get the full and relative path and extension of the image file.
-    fig, _ = utils.getSubmissionData(payload, "imageName")
-    name, ext = os.path.splitext(fig)
-    if ext == "":
-        ext = ".png"
-        fig = name + ext
+    selected_figure, _ = utils.getSubmissionData(payload, "inputFile")
+    full_fig = Path(utils.getSessionFolder(meta_data)) / selected_figure[0]["name"]
+    name, ext = os.path.splitext(selected_figure[0]["originalName"])
+    fig = name + "_mod_" + ext
 
     # Prepare output locations.
     target_fig = str(temp_target_folder / fig)
     Path(target_fig).unlink(missing_ok=True)
-    apply_action(payload, None, target_fig)
+    apply_action(payload, full_fig, target_fig)
 
     # Put the created file in the ResultFile component for the user to download.
     if os.path.isfile(target_fig):

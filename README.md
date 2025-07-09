@@ -138,11 +138,16 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         ```
         pip install imageprocessing/requirements-imagegen.txt
         ```
+    * Optionally, install PyTorch image transformation dependencies for the PyTorch Transforms app.
+        ```
+        pip install imageprocessing/pytorch/requirements.txt
+        ```
     * Then start the apps using the `run` module
         ```
-        python -m run imageprocessing.image_processor
-        python -m run imageprocessing.image_inpainter
-        python -m run imageprocessing.image_generator
+        python -m run imageprocessing.processor.image_processor
+        python -m run imageprocessing.inpainter.image_inpainter
+        python -m run imageprocessing.generator.image_generator
+        python -m run imageprocessing.pytorch.image_transform
         ```
         
 * **PDF merger**: app for merging (parts of) uploaded PDF files.
