@@ -22,6 +22,20 @@ The imageprocessing package contains four Simian web apps for modifying and gene
 
   - Upload an image, select the combination method, select and parameterize `PyTorch` vision transforms, and download the processed image.
 
+- `annotator.image_annotator`
+
+  - Upload images and an optional label definitions file, draw shapes on the figures and select from the predefined labels. When all figures are annotated you can download a .csv file with the annotations.
+
+
+## Installation
+
+- `simian.gui`                      [Installation manual](doc.simiansuite.com/simian-gui/setup/python.html)
+- `simian.local`                    When running locally.
+- requirements.txt                  Dependencies for all apps
+- requirements-imagegen.txt         Dependencies for the image generator app.
+- pytorch/requirements.txt          PyTorch Transform dependencies.
+
+
 ## Actions
 
 - `parts.actions_list.py`

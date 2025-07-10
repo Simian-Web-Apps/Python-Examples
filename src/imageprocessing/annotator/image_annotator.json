@@ -1,0 +1,288 @@
+{
+    "components": [
+        {
+            "label": "isDeployed",
+            "defaultValue": false,
+            "key": "isDeployed",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "image loaded",
+            "key": "imageLoaded",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "title": "Description",
+            "collapsible": true,
+            "key": "descriptionPanel",
+            "type": "panel",
+            "label": "Description",
+            "collapsed": true,
+            "input": false,
+            "tableView": false,
+            "components": [
+                {
+                    "label": "Description",
+                    "className": "lead",
+                    "refreshOnChange": false,
+                    "key": "description",
+                    "type": "html",
+                    "input": false,
+                    "hideLabel": true,
+                    "tableView": false
+                }
+            ]
+        },
+        {
+            "label": "uploadedImages",
+            "tableView": false,
+            "storage": "base64",
+            "webcam": false,
+            "fileTypes": [
+                {
+                    "label": "",
+                    "value": ""
+                }
+            ],
+            "multiple": true,
+            "validateWhenHidden": false,
+            "key": "uploadedImages",
+            "customConditional": "show = data.isDeployed && !data.imageLoaded;",
+            "type": "file",
+            "input": true
+        },
+        {
+            "label": "image loaded",
+            "key": "unprocessedImages",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "(Optional) Upload a predefined set of labels",
+            "description": "The file must be a text file and contain the column header \"Labels\". Its rows are used to fill the annotation options.",
+            "tableView": false,
+            "storage": "base64",
+            "webcam": false,
+            "fileTypes": [
+                {
+                    "label": "",
+                    "value": ""
+                }
+            ],
+            "filePattern": "*.csv",
+            "validateWhenHidden": false,
+            "key": "uploadedLabels",
+            "customConditional": "show = !data.imageLoaded;",
+            "type": "file",
+            "input": true
+        },
+        {
+            "label": "Folder",
+            "labelPosition": "left-left",
+            "description": "Folder containing the images.",
+            "applyMaskOn": "change",
+            "tableView": true,
+            "validate": {
+                "required": true
+            },
+            "validateWhenHidden": false,
+            "key": "targetFolder",
+            "customConditional": "show = !data.isDeployed && !data.imageLoaded;",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Index file",
+            "labelPosition": "left-left",
+            "description": "File where the labels of the images are stored. May be relative to the folder with the images, or an absolute path.",
+            "applyMaskOn": "change",
+            "tableView": true,
+            "defaultValue": "../labels.csv",
+            "validate": {
+                "required": true
+            },
+            "validateWhenHidden": false,
+            "key": "indexFile",
+            "customConditional": "show = !data.isDeployed && !data.imageLoaded;",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Annotation Mode",
+            "labelPosition": "left-left",
+            "widget": "choicesjs",
+            "tableView": true,
+            "defaultValue": "any",
+            "data": {
+                "values": [
+                    {
+                        "label": "Any",
+                        "value": "any"
+                    },
+                    {
+                        "label": "Line",
+                        "value": "line"
+                    },
+                    {
+                        "label": "Bounding box",
+                        "value": "boundingBox"
+                    },
+                    {
+                        "label": "Circle",
+                        "value": "circle"
+                    },
+                    {
+                        "label": "Freehand draw",
+                        "value": "freehandDraw"
+                    }
+                ]
+            },
+            "validate": {
+                "required": true
+            },
+            "validateWhenHidden": false,
+            "key": "annotationMode",
+            "type": "select",
+            "customConditional": "show = !data.imageLoaded;",
+            "input": true
+        },
+        {
+            "label": "Load first image",
+            "showValidations": false,
+            "tableView": false,
+            "key": "loadFirstImage",
+            "conditional": {
+                "show": false,
+                "when": "imageLoaded",
+                "eq": true
+            },
+            "type": "button",
+            "event": "LoadImage",
+            "action": "event",
+            "input": true
+        },
+        {
+            "label": "image name",
+            "key": "imageName",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "Loaded image",
+            "aspectRatio": 1.3333333333333333,
+            "tableView": false,
+            "key": "loadedImage",
+            "customConditional": "show = data.imageLoaded && data.annotationsFile == undefined",
+            "type": "customplotly",
+            "input": true
+        },
+        {
+            "label": "registeredLabels",
+            "key": "registeredLabels",
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
+            "label": "Register new label",
+            "showValidations": false,
+            "customClass": "form-check-inline",
+            "tableView": false,
+            "key": "registerLabel",
+            "type": "button",
+            "event": "RegisterLabel",
+            "conditional": {
+                "show": true,
+                "when": "imageLoaded",
+                "eq": "true"
+            },
+            "action": "event",
+            "input": true
+        },
+        {
+            "label": "New label",
+            "labelPosition": "left-left",
+            "applyMaskOn": "change",
+            "customClass": "form-check-inline",
+            "hideLabel": true,
+            "tableView": true,
+            "validateWhenHidden": false,
+            "key": "newLabel",
+            "conditional": {
+                "show": true,
+                "when": "imageLoaded",
+                "eq": "true"
+            },
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Annotations",
+            "reorder": false,
+            "addAnotherPosition": "bottom",
+            "layoutFixed": false,
+            "enableRowGroups": false,
+            "initEmpty": false,
+            "tableView": false,
+            "defaultValue": [
+                {}
+            ],
+            "validateWhenHidden": false,
+            "tooltip": "Each row corresponds to a shape in the figure, and may have multiple labels.",
+            "key": "annotations",
+            "type": "datagrid",
+            "conditional": {
+                "show": true,
+                "when": "imageLoaded",
+                "eq": "true"
+            },
+            "input": true,
+            "components": [
+                {
+                    "label": "Shape labels",
+                    "widget": "choicesjs",
+                    "tableView": true,
+                    "multiple": true,
+                    "dataSrc": "custom",
+                    "data": {
+                        "custom": "values = data.registeredLabels;"
+                    },
+                    "validateWhenHidden": false,
+                    "key": "labels",
+                    "type": "select",
+                    "input": true
+                }
+            ]
+        },
+        {
+            "label": "Submit and next",
+            "showValidations": false,
+            "disableOnInvalid": true,
+            "tableView": false,
+            "key": "hello",
+            "conditional": {
+                "show": true,
+                "when": "imageLoaded",
+                "eq": "true"
+            },
+            "type": "button",
+            "event": "SubmitAnnotation",
+            "action": "event",
+            "input": true
+        },
+        {
+            "label": "Annotations file",
+            "tableView": false,
+            "key": "annotationsFile",
+            "customConditional": "show = data.isDeployed && data.annotationsFile != undefined",
+            "type": "customresultfile",
+            "input": true
+        }
+    ]
+}
