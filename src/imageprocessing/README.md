@@ -34,6 +34,7 @@ The imageprocessing package contains four Simian web apps for modifying and gene
 - requirements.txt                  Dependencies for all apps
 - requirements-imagegen.txt         Dependencies for the image generator app.
 - pytorch/requirements.txt          PyTorch Transform dependencies.
+- annotator/requirements-ai.txt     Optional dependency for using AI to prepare annotations on the figures.
 
 
 ## Actions

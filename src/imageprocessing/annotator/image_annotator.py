@@ -2,19 +2,6 @@
 
 Select a folder with images (local mode) or upload a set of images (deployed) to annotate.
 
-When running locally or when deploying this app:
-
-- prepare a "registered_labels.csv" file and put it next to this file. It must contain the column
-  header "Labels". Its rows are used as the default annotation options. New labels defined in the
-  app are not added to this file.
-
-  For instance:
-  ```
-  Labels
-  rainbow
-  unicorn
-  ```
-
 
 When running locally:
 - prepare a csv file to write the annotations to with the following column headers:
@@ -29,9 +16,36 @@ line per image containing the following information:
 image name;[Shape label];[Shape types];[Shape image coordinates]
 str       ;list[str]    ;list[str]    ;list[dict[list[int]]]
 image.jpg;['rainbow'];['rect'];[{{'x': [68, 818], 'y': [162, 589]}]
+
+
+To customize this application
+ - "registered_labels.csv": with your own set of labels
+ - "detection_model.py":    image detection model
+
+
+- prepare a "registered_labels.csv" file and put it next to this file. It must contain the column
+  header "Labels". Its rows are used as the default annotation options. New labels defined in the
+  app are not added to this file.
+
+  For instance:
+  ```
+  Labels
+  rainbow
+  unicorn
+  ```
+
+
+ - "detection_model.py":    image detection model
+    - must have a module docstring to be included in the app description panel.
+    - must implement a function `run` that accepts the image file, a threshold in %, and a flag to
+        return bounding boxes or segmentations as inputs. It must return per detected object a
+        classification string, an object dicts and confidence score. The object dict must contain
+        the "type", "x" and "y" coordinates of the shape [in pixels] with respect to the top-left.
+        Type may be one of {"rect", "circle", "line", "path"}.
 """
 
 import glob
+import importlib.util
 import os
 import pandas as pd
 from pathlib import Path
@@ -42,17 +56,17 @@ from simian.gui import Form, component, utils
 
 import imageprocessing.generic
 
+
 # Local mode bookkeeping to improve performance
 LOCAL_FILE_LIST = dict()
 
-DESCR_LOCAL_MODE = """
-Select a folder with images to annotate and the annotations .csv file to write to.
+DESCR_START = """Simian image annotator app to add shapes to an image and classify with labels.\n\n
+"""
+DESCR_LOCAL_MODE = """Select a folder with images to annotate and the annotations .csv file to write to.
 
 Note that on each iteration the result is written to the annotation file. So, you can close the app at any moment without losing submitted progress.
 """
-
 DESCR_DEPLOYED_MODE = "Upload images to annotate. The annotations file can be downloaded once all figures are annotated."
-
 DESCR_APPEND = """
 
 Optionally, you can select a .csv file with extra label definitions. The file must have one column: 'Labels'.
@@ -64,11 +78,13 @@ def gui_init(meta_data: dict) -> dict:
     """Initialize the app."""
     Form.componentInitializer(
         loadedImage=setup_plotly,
-        isDeployed=setup_deployed(meta_data),
+        isDeployed=set_default_value(meta_data["mode"] == "deployed"),
+        aiDetected=set_default_value(_check_has_ai()),
         description=add_description(meta_data),
+        aiObjectDetectionConfidenceThreshold=setup_threshold,
+        registeredLabels=set_default_value([]),
     )
     form = Form(from_file=__file__)
-    form.addCustomCss(imageprocessing.generic.get_css())
 
     return {
         "form": form,
@@ -83,7 +99,10 @@ def gui_init(meta_data: dict) -> dict:
 def gui_event(meta_data: dict, payload: dict) -> dict:
     """Process app events."""
     Form.eventHandler(
+        ClearAnnotations=clear_annotations,
+        DetectObjects=_detect_objects,
         LoadImage=load_first,
+        ShapeNumberUpdated=shape_number,
         SubmitAnnotation=submit_and_next,
         RegisterLabel=new_label,
     )
@@ -94,16 +113,13 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
 def load_first(meta_data: dict, payload: dict) -> dict:
     """Load the selected figures and label definitions."""
     # Get the labels next to this file.
-    label_list = grow_label_list(str(Path(__file__).parent / "registered_labels.csv"))
+    grow_label_list(payload, str(Path(__file__).parent / "registered_labels.csv"))
 
     # Get the user selected labels file.
     payload, label_file = component.File.storeUploadedFiles(meta_data, payload, "uploadedLabels")
-
     if len(label_file) == 1:
         # A label file was selected. Get it out of the list.
-        label_list = grow_label_list(label_file[0], label_list)
-
-    utils.setSubmissionData(payload, "registeredLabels", label_list)
+        grow_label_list(payload, label_file[0])
 
     # Ensure the correct mode is shown in the figure.
     payload = _select_figure_mode(payload)
@@ -116,20 +132,76 @@ def load_first(meta_data: dict, payload: dict) -> dict:
     return payload
 
 
-def grow_label_list(label_file: str, label_list: list[str] = []) -> list[str]:
+def shape_number(meta_data: dict, payload: dict) -> dict:
+    """Remove shape in the plot based on the table row being removed."""
+    rowIds, _ = utils.getSubmissionData(payload, "rowId")
+    registeredIds, _ = utils.getSubmissionData(payload, "registeredRowIds")
+    plot_obj, _ = utils.getSubmissionData(payload, "loadedImage")
+
+    if rowIds is not None and len(removed_row := set(registeredIds) - set(rowIds)) > 0:
+        # A row was removed.
+        removed_index = registeredIds.index(list(removed_row)[0])
+
+        if len(plot_obj.figure.layout.shapes) >= (removed_index + 1):
+            # Recreate the shapes list, but without the shape corresponding with the removed row.
+            plot_obj.figure.layout.shapes = [
+                shape
+                for ii, shape in enumerate(plot_obj.figure.layout.shapes)
+                if ii != removed_index
+            ]
+
+    # Update the shape numbers in the plot.
+    for nr, shape in enumerate(plot_obj.figure.layout.shapes):
+        shape["label"] = new_shape_label(payload, nr)
+
+    utils.setSubmissionData(payload, "loadedImage", plot_obj)
+    utils.setSubmissionData(payload, "registeredRowIds", rowIds)
+    return payload
+
+
+def new_shape_label(payload: dict, nr: int) -> dict:
+    """Create new Plotly shape label dict with nr + 1."""
+    if utils.getSubmissionData(payload, "useBoxes")[0]:
+        text_position = "top right"
+    else:
+        text_position = "middle center"
+
+    return {"text": str(nr + 1), "textposition": text_position, "font": {"color": "yellow"}}
+
+
+def grow_label_list(payload: dict, label_file: str = None, new_label: str = None) -> None:
     """Expand label list with definitions in file."""
-    if os.path.exists(label_file):
+    label_list, _ = utils.getSubmissionData(payload, "registeredLabels")
+
+    if label_file is not None and os.path.exists(label_file):
         annotation_table = pd.read_csv(label_file, delimiter=";")
         label_list.extend(list(annotation_table["Labels"]))
+    elif new_label is not None:
+        label_list.append(new_label)
 
-    return label_list
+    utils.setSubmissionData(payload, "registeredLabels", label_list)
+
+
+def clear_annotations(meta_data: dict, payload: dict) -> dict:
+    # Clear the labels in the table.
+    _set_annotations_table(payload, new_table=[])
+
+    # Remove any shapes.
+    plot_obj, _ = utils.getSubmissionData(payload, "loadedImage")
+    plot_obj.figure.layout.shapes = []
+    utils.setSubmissionData(payload, "loadedImage", plot_obj)
+    return payload
+
+
+def _set_annotations_table(payload, new_table: list[dict]):
+    """Set the contents of the annotations table and the corresponding registered row ids."""
+    utils.setSubmissionData(payload, "annotations", new_table)
+    utils.setSubmissionData(payload, "registeredRowIds", [row["rowId"] for row in new_table])
 
 
 def new_label(meta_data: dict, payload: dict) -> dict:
     """Add a new label to the list of available options."""
-    labels, _ = utils.getSubmissionData(payload, "registeredLabels")
-    labels += [utils.getSubmissionData(payload, "newLabel")[0]]
-    utils.setSubmissionData(payload, "registeredLabels", labels)
+    grow_label_list(payload, new_label=utils.getSubmissionData(payload, "newLabel")[0])
     utils.setSubmissionData(payload, "newLabel", "")
     return payload
 
@@ -168,7 +240,7 @@ def submit_and_next(meta_data: dict, payload: dict) -> dict:
         with open(ann_file, "a") as f:
             f.write(f"{figure_name};{labels};{types};{coords}\n")
 
-        utils.setSubmissionData(payload, "annotations", [{"labels": []}])
+        _set_annotations_table(payload, new_table=[])
 
     # Get and show the next figure.
     _show_next_figure(meta_data, payload, plot_obj)
@@ -181,9 +253,19 @@ def add_description(meta_data):
 
     def inner(comp):
         if meta_data["mode"] == "deployed":
-            txt = DESCR_DEPLOYED_MODE + DESCR_APPEND
+            txt = DESCR_START + DESCR_DEPLOYED_MODE + DESCR_APPEND
         else:  # Local
-            txt = DESCR_LOCAL_MODE + DESCR_APPEND
+            txt = DESCR_START + DESCR_LOCAL_MODE + DESCR_APPEND
+
+        if _check_has_ai():
+            # Add detected AI image detection model description.
+            import imageprocessing.annotator.detection_model as model
+
+            txt += (
+                """\nObject detection model included:
+Select a confidence threshold, whether to draw boxes or segmentations in the plot, and click rerun when needed.\n\n"""
+                + model.__doc__
+            )
 
         txt = txt.removeprefix("\n")
         comp.defaultValue = txt.replace("\n", "<br>")
@@ -191,11 +273,16 @@ def add_description(meta_data):
     return inner
 
 
-def setup_deployed(meta_data):
-    """Ensure the default value for the "isDeployed component is set from the Portal."""
+def _check_has_ai() -> bool:
+    spec = importlib.util.find_spec("imageprocessing.annotator.detection_model")
+    return spec is not None
+
+
+def set_default_value(default_value):
+    """Set default value initializer function."""
 
     def inner(comp):
-        comp.defaultValue = meta_data["mode"] == "deployed"
+        comp.defaultValue = default_value
 
     return inner
 
@@ -208,6 +295,15 @@ def setup_plotly(plot_obj):
     # Make the plot as empty as possible
     plot_obj.figure.update_xaxes(showgrid=False, range=(1, 2))
     plot_obj.figure.update_yaxes(showgrid=False, range=(1, 2))
+
+
+def setup_threshold(threshold):
+    if _check_has_ai():
+        threshold.hidden = False
+        threshold.defaultValue = 50  # [%]
+    else:
+        # AI Object detection module not detected. Defaults are ok.
+        pass
 
 
 def _show_next_figure(meta_data, payload, plot_obj) -> None:
@@ -224,9 +320,76 @@ def _show_next_figure(meta_data, payload, plot_obj) -> None:
     # Remove any shapes.
     plot_obj.figure.layout.shapes = []
     utils.setSubmissionData(payload, "loadedImage", plot_obj)
+    use_ai, _ = utils.getSubmissionData(payload, "useAiObjectDetection")
+
+    if next_figure is not None and _check_has_ai() and use_ai:
+        payload["followUp"] = "DetectObjects"
+        utils.addAlert(payload, "Running object detection", "info")
 
     # Store the nice name of the figure for use in the annotations file.
     utils.setSubmissionData(payload, "imageName", nice_file_name)
+    utils.setSubmissionData(payload, "fullImageName", next_figure)
+
+
+def _detect_objects(meta_data, payload):
+    """Use image object detection model to add shapes to the object."""
+    import imageprocessing.annotator.detection_model as model
+
+    # Get the model inputs.
+    image_file, _ = utils.getSubmissionData(payload, "fullImageName")
+    threshold, _ = utils.getSubmissionData(payload, "aiObjectDetectionConfidenceThreshold")
+    use_boxes, _ = utils.getSubmissionData(payload, "useBoxes")
+
+    # Run the object detection model.
+    found_labels, found_objects, scores = model.run(image_file, threshold, use_boxes)
+
+    if isinstance(found_labels, str):
+        # Run method returned an error message.
+        utils.addAlert(payload, found_labels, "error")
+        return payload
+
+    clear_annotations(meta_data, payload)
+    plot_obj, _ = utils.getSubmissionData(payload, "loadedImage")
+
+    if len(found_labels) == 0:
+        # No objects detected. Add a message.
+        utils.addAlert(
+            payload, "No objects detected with the current model and threshold.", "warning"
+        )
+
+    if use_boxes:
+        settings = {"line": {"color": "yellow"}}
+    else:
+        settings = {
+            "fillcolor": "hsla(60, 100%, 50%, 90%)",
+            "opacity": 0.2,
+            "line": {"color": "black"},
+        }
+
+    for nr, object in enumerate(found_objects):
+        plot_obj.addShape(
+            object | settings | {"editable": True, "label": new_shape_label(payload, nr)}
+        )
+
+    utils.setSubmissionData(payload, "loadedImage", plot_obj)
+
+    # Add the labels from the model to the allowed values in the labels column of the table.
+    label_list, _ = utils.getSubmissionData(payload, "registeredLabels")
+    label_list.extend(list(set(found_labels) - set(label_list)))
+    utils.setSubmissionData(payload, "registeredLabels", label_list)
+
+    new_annotations = [
+        {
+            "labels": label,
+            "confidenceScore": int(score * 100),
+            "shapeNumber": nr + 1,
+            "rowId": "gen" + str(nr + 1),
+        }
+        for nr, (label, score) in enumerate(zip(found_labels, scores))
+    ]
+    _set_annotations_table(payload, new_table=new_annotations)
+
+    return payload
 
 
 def _get_annotations_file(meta_data, payload) -> str:
