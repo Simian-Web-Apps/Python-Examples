@@ -58,7 +58,7 @@
                             },
                             "key": "inputFile",
                             "properties": {
-                                "triggerHappy": "file_selection_change"
+                                "triggerHappy": "FileSelectionChange"
                             },
                             "type": "file",
                             "input": true

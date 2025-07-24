@@ -2,6 +2,11 @@
 
 Other apps may include this module by defining a placeholder container, where the components of this
 module can be added.
+- ensure the `initialize_images` function is called as `componentInitializer`.
+- ensure the `file_selection_change` function is registered for the `FileSelectionChange` event.
+- the `get_image_names` function can be used for more generic figure handling.
+- the `upload_and_show_figure` function uploads modified figures for users to download and shows it
+  in the results Plotly component.
 """
 
 import os.path
@@ -159,6 +164,30 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
     return payload
 
 
+def get_image_names(meta_data, payload) -> tuple[str]:
+    """Get generic image names for the image_panel components.
+
+    Returns:
+        temp_target_folder:     Session folder subfolder to temporarily write figures to.
+        new_name:               Modified name of the input figure.
+        target_fig:             Full name for the new figure: temp_target_folder / new_name.
+        orig_figure:            Name of the uploaded figure to process in the app.
+    """
+    # Prepare output locations.
+    temp_target_folder = Path(utils.getSessionFolder(meta_data)) / "processed_temp"
+    os.makedirs(temp_target_folder, exist_ok=True)
+
+    # Get the full and relative path and extension of the image file.
+    selected_figure, _ = utils.getSubmissionData(payload, "inputFile")
+    orig_figure = Path(utils.getSessionFolder(meta_data)) / selected_figure[0]["name"]
+    name, ext = os.path.splitext(selected_figure[0]["originalName"])
+    new_name = name + "_mod_" + ext
+
+    target_fig = str(temp_target_folder / new_name)
+
+    return temp_target_folder, new_name, target_fig, orig_figure
+
+
 def show_figure(payload, selected_figure: str, input: bool = True):
     """Show the selected figure in the Plotly component.
 
@@ -178,7 +207,7 @@ def show_figure(payload, selected_figure: str, input: bool = True):
 
 
 def upload_and_show_figure(meta_data, payload, selected_figure: str, nice_name: str) -> dict:
-    """Upload the figure to the ResultFile component and show in the result Plotly component."""
+    """Upload the figure to the ResultFile, show in the result Plotly, and remove from disk."""
     if os.path.isfile(selected_figure):
         component.ResultFile.upload(
             file_paths=[selected_figure],
@@ -191,6 +220,9 @@ def upload_and_show_figure(meta_data, payload, selected_figure: str, nice_name: 
 
     # Show the processed file in the web app.
     show_figure(payload, selected_figure, input=False)
+
+    # Remove the created figure file again to ensure that the session folder does not bloat.
+    Path(selected_figure).unlink(missing_ok=True)
 
 
 def image_to_plotly(plot_obj, selected_figure: str) -> None:

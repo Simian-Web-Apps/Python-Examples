@@ -3,8 +3,6 @@
 Uses the Python TorchVision and Pillow libraries to modify images provided by the user.
 """
 
-import os
-from pathlib import Path
 from PIL import Image
 import traceback
 
@@ -50,13 +48,9 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
     """Apply the transformations to the input image."""
     import imageprocessing.parts.transform
 
-    selected_figure, _ = utils.getSubmissionData(payload, "inputFile")
-    sessionFolder = Path(utils.getSessionFolder(meta_data))
-    full_fig = sessionFolder / selected_figure[0]["name"]
-    name, ext = os.path.splitext(selected_figure[0]["originalName"])
-    plot_obj, _ = utils.getSubmissionData(payload, "image")
-    fig = name + "_mod_" + ext
-    im = Image.open(full_fig)
+    _, new_name, target_fig, orig_figure = image_comp.get_image_names(meta_data, payload)
+
+    im = Image.open(orig_figure)
 
     # Create the PyTorch Vision Transform chain.
     composed_transform = imageprocessing.parts.transform.get_composed_transform(payload)
@@ -79,10 +73,10 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
                 new_image = to_pil_transformer(new_image)
 
             # Save the created figure in the session folder. and put it in the ResultFile.
-            target_fig = str(sessionFolder / fig)
             new_image.save(target_fig)
 
-            image_comp.upload_and_show_figure(meta_data, payload, target_fig, fig)
+            # Put the created file in the ResultFile component for the user to download.
+            image_comp.upload_and_show_figure(meta_data, payload, target_fig, new_name)
 
         except Exception as exc:
             # An error occurred. Notify the user.
