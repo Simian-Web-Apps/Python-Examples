@@ -7,7 +7,7 @@ from pathlib import Path
 import imageprocessing.generic
 import imageprocessing.generator.image_gen_actions  # Import ensures Image gen actions are available.
 from imageprocessing.parts.actions_list import apply_action, initialize_actions
-from imageprocessing.parts.image_panel import image_to_plotly, initialize_images
+from imageprocessing.parts.image_panel import initialize_images, show_figure
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
 
@@ -57,15 +57,10 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
         selected_figure = selected_figure[0]
 
     # Show the selected image in the input Plotly component.
-    plot_obj, _ = utils.getSubmissionData(payload, "image")
-    image_to_plotly(plot_obj, selected_figure)
-    utils.setSubmissionData(payload, key="image", data=plot_obj)
+    show_figure(payload, selected_figure, input=True)
 
     # Remove any images from the Result Plotly component.
-    plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
-    image_to_plotly(plot_obj, "")
-    utils.setSubmissionData(payload, key="resultFigure", data=plot_obj)
-    utils.setSubmissionData(payload, "hasResult", False)
+    show_figure(payload, "", input=False)
 
     return payload
 
@@ -100,10 +95,7 @@ def process_files(meta_data: dict, payload: dict) -> dict:
         )
 
         # Show the processed file in the web app.
-        plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
-        image_to_plotly(plot_obj, target_fig)
-        utils.setSubmissionData(payload, "resultFigure", plot_obj)
-        utils.setSubmissionData(payload, "hasResult", True)
+        show_figure(payload, target_fig, input=False)
 
     # Clear session folder to remove temp figures again.
     shutil.rmtree(temp_target_folder, ignore_errors=True)

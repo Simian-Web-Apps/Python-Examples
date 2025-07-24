@@ -4,10 +4,12 @@ Other apps may include this module by defining a placeholder container, where th
 module can be added.
 """
 
+import os.path
+from pathlib import Path
 from typing import Callable
 
-import plotly.graph_objects as go
 from PIL import Image
+import plotly.graph_objects as go
 from simian.gui import Form, component, composed_component, utils
 
 
@@ -18,6 +20,15 @@ class ImagePanel(composed_component.Builder):
 
         # Add components from JSON definition.
         parent.addFromJson(__file__.replace(".py", ".json"))
+
+        # Add the Image slider CSS and javascript code to the Form.
+        folder = Path(__file__).parents[0] / "slider"
+        with open(folder / "styles.css", "r") as css:
+            Form.addCustomCss(css.read())
+
+        for name in ["index.js", "simian-imageslider-extension.js"]:
+            with open(folder / name, "r") as js:
+                Form.addCustomJavaScript(js.read())
 
 
 def initialize_images(
@@ -37,8 +48,9 @@ def initialize_images(
         resultFile=change_props({"hidden": not user_image_io}),
         imageName=change_props({"hidden": use_input_image}),
         imageLabel=change_input_label(input_label),
-        image=setup_plotly(draw_input),
-        resultFigure=setup_plotly(),
+        image=_setup_plotly(draw_input),
+        resultFigure=_setup_plotly(),
+        imageComparison=_setup_slider,
     )
 
     def inner(comp):
@@ -67,7 +79,7 @@ def change_input_label(new_label: str):
     return inner
 
 
-def setup_plotly(allow_draw: bool = False) -> Callable:
+def _setup_plotly(allow_draw: bool = False) -> Callable:
     """Setup Plotly components."""
 
     def inner(plot_obj):
@@ -101,6 +113,43 @@ def setup_plotly(allow_draw: bool = False) -> Callable:
         plot_obj.figure.update_yaxes(showgrid=False, range=(1, 2))
 
     return inner
+
+
+def _setup_slider(slider):
+    """Setup the image slider component."""
+    slider.content = """
+<img-comparison-slider class="img-comparison-slider w-100">
+    <figure slot="first" class="before">
+        <img class="w-100">
+        <figcaption>Before</figcaption>
+    </figure>
+    <figure slot="second" class="after">
+        <img class="w-100">
+        <figcaption>After</figcaption>
+    </figure>
+</img-comparison-slider>
+"""
+
+    slider.defaultValue = {
+        "sliderValue": 50,
+        "direction": "horizontal",
+        "img1Url": None,
+        "img2Url": None,
+    }
+
+
+def show_figure(payload, selected_figure: str, input: bool = True):
+    if input:
+        plot_key = "image"
+    else:
+        plot_key = "resultFigure"
+
+    plot_obj, _ = utils.getSubmissionData(payload, plot_key)
+    image_to_plotly(plot_obj, selected_figure)
+    utils.setSubmissionData(payload, key=plot_key, data=plot_obj)
+
+    if not input:
+        utils.setSubmissionData(payload, "hasResult", os.path.isfile(selected_figure))
 
 
 def image_to_plotly(plot_obj, selected_figure: str) -> None:

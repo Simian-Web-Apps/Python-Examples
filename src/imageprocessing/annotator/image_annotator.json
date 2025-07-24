@@ -92,7 +92,6 @@
                             "description": "Folder containing the images.",
                             "applyMaskOn": "change",
                             "tableView": true,
-                            "defaultValue": "C:\\Files\\theta\\P3370\\images",
                             "validate": {
                                 "required": true
                             },

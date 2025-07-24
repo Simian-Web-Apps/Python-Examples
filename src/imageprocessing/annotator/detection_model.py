@@ -3,6 +3,7 @@
 https://github.com/facebookresearch/detectron2
 """
 
+from pathlib import Path
 import numpy as np
 from PIL import Image
 
@@ -35,7 +36,10 @@ def run(
     # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
     # https://github.com/facebookresearch/detectron2/blob/main/MODEL_ZOO.md
     cfg.merge_from_file(
-        model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+        Path(model_zoo.__file__).parents[2]
+        / "configs"
+        / "COCO-InstanceSegmentation"
+        / "mask_rcnn_R_50_FPN_3x.yaml"
     )
 
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = threshold / 100  # set threshold for this model

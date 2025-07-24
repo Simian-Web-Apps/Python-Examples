@@ -55,6 +55,7 @@ import plotly.graph_objects as go
 from simian.gui import Form, component, utils
 
 import imageprocessing.generic
+from imageprocessing.parts.image_panel import image_to_plotly
 
 
 # Local mode bookkeeping to improve performance
@@ -310,11 +311,11 @@ def _show_next_figure(meta_data, payload, plot_obj) -> None:
     """Get the next figure and show it in the plotly component."""
     next_figure, nice_file_name = _get_next_figure(meta_data, payload)
     try:
-        _image_to_plotly(plot_obj, next_figure)
+        image_to_plotly(plot_obj, next_figure)
     except Exception:
         # File could not be shown, clear the plotly component.
         utils.addAlert(payload, f"Unable to show {nice_file_name}", "danger")
-        _image_to_plotly(plot_obj, None)
+        image_to_plotly(plot_obj, None)
         nice_file_name = None
 
     # Remove any shapes.
@@ -481,41 +482,6 @@ def _get_next_figure(meta_data, payload) -> tuple[str, str]:
             )
 
     return next_file, nice_file_name
-
-
-def _image_to_plotly(plot_obj, selected_figure: str) -> None:
-    """Put image file in Plotly background."""
-    if plot_obj.figure is None:
-        # When no figure loaded from the backend, insert an empty one for later use.
-        plot_obj.figure = go.Figure()
-
-    if selected_figure is None or len(selected_figure) == 0:
-        img_width = img_height = 1
-        image_setup = [{"source": None}]
-    else:
-        base64_image = utils.encodeImage(selected_figure)
-
-        im = Image.open(selected_figure)
-        img_width, img_height = im.size
-
-        image_setup = [
-            {
-                "source": base64_image,
-                "xref": "x",
-                "yref": "y",
-                "xanchor": "left",
-                "yanchor": "top",
-                "x": 1,
-                "y": 1,
-                "sizex": img_width,
-                "sizey": img_height,
-                "layer": "below",
-            }
-        ]
-
-    plot_obj.figure.update_layout(images=image_setup, margin={"l": 0, "r": 0, "t": 0, "b": 0})
-    plot_obj.figure.update_xaxes(showgrid=False, range=(1, img_width + 1))
-    plot_obj.figure.update_yaxes(showgrid=False, scaleanchor="x", range=(img_height + 1, 1))
 
 
 def _select_figure_mode(payload: dict) -> dict:

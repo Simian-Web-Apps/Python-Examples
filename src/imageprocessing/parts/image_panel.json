@@ -192,6 +192,35 @@
             "type": "columns",
             "input": false,
             "tableView": false
+        },
+        {
+            "label": "Image comparison",
+            "hideLabel": true,
+            "tableView": false,
+            "content": "<p>Hello, world!</p>",
+            "initializeFn": "initImageSlider",
+            "updateFn": "updateImageSlider",
+            "calculateValue": "value = {\r\n  \"sliderValue\": row.imageComparison?.sliderValue, \r\n  \"direction\": \"horizontal\", \r\n  \"img1Url\": (row.image.layout.images?.length > 0) ? row.image.layout?.images[0].source : null,\r\n  \"img2Url\": (row.resultFigure.layout.images?.length > 0) ? row.resultFigure.layout?.images[0].source : null\r\n};",
+            "key": "imageComparison",
+            "conditional": {
+                "show": true,
+                "when": "imageMode",
+                "eq": "True"
+            },
+            "customConditional": "show=row.imageMode && row.hasResult;",
+            "type": "customextension",
+            "input": true
+        },
+        {
+            "label": "Image mode",
+            "leftLabel": "Side-by-side",
+            "rightLabel": "Image comparison slider",
+            "hideLabel": true,
+            "tableView": false,
+            "key": "imageMode",
+            "customConditional": "show = row.hasResult;",
+            "type": "customtoggle",
+            "input": true
         }
     ]
 }

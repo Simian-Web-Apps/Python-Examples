@@ -10,7 +10,7 @@ import traceback
 
 from simian.gui import Form, component, utils
 import imageprocessing.generic
-import imageprocessing.parts.image_panel
+from imageprocessing.parts.image_panel import show_figure, initialize_images
 
 if __name__ == "__main__":
     from simian.local import run
@@ -21,9 +21,7 @@ if __name__ == "__main__":
 def gui_init(meta_data: dict) -> dict:
     """Initialize the app."""
     # Initialize components.
-    Form.componentInitializer(
-        image_panel=imageprocessing.parts.image_panel.initialize_images(user_image_io=True)
-    )
+    Form.componentInitializer(image_panel=initialize_images(user_image_io=True))
     form = Form(from_file=__file__)
     form.addCustomCss(imageprocessing.generic.get_css())
 
@@ -60,15 +58,10 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
         selected_figure = selected_figure[0]
 
     # Show the selected image in the input Plotly component.
-    plot_obj, _ = utils.getSubmissionData(payload, "image")
-    imageprocessing.parts.image_panel.image_to_plotly(plot_obj, selected_figure)
-    utils.setSubmissionData(payload, key="image", data=plot_obj)
+    show_figure(payload, selected_figure, input=True)
 
     # Remove any images from the Result Plotly component.
-    plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
-    imageprocessing.parts.image_panel.image_to_plotly(plot_obj, "")
-    utils.setSubmissionData(payload, key="resultFigure", data=plot_obj)
-    utils.setSubmissionData(payload, "hasResult", False)
+    show_figure(payload, "", input=False)
 
     return payload
 
@@ -120,10 +113,7 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
                 )
 
             # Show the processed file in the web app.
-            plot_obj, _ = utils.getSubmissionData(payload, "resultFigure")
-            imageprocessing.parts.image_panel.image_to_plotly(plot_obj, target_fig)
-            utils.setSubmissionData(payload, "resultFigure", plot_obj)
-            utils.setSubmissionData(payload, "hasResult", True)
+            show_figure(payload, target_fig, input=False)
 
         except Exception as exc:
             # An error occurred. Notify the user.
