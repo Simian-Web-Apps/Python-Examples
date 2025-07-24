@@ -9,7 +9,7 @@ from pathlib import Path
 
 import imageprocessing.generic
 from imageprocessing.parts.actions_list import apply_action, initialize_actions
-from imageprocessing.parts.image_panel import show_figure, initialize_images
+from imageprocessing.parts.image_panel import show_figure, initialize_images, file_selection_change
 from simian.gui import Form, utils
 from simian.gui.component import File, ResultFile
 
@@ -42,27 +42,6 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     )
     callback = utils.getEventFunction(meta_data, payload)
     return callback(meta_data, payload)
-
-
-def file_selection_change(meta_data: dict, payload: dict) -> dict:
-    """Process file selection change.
-
-    When a figure is selected, show it in the app. Otherwise notify none selected.
-    """
-    payload, selected_figure = File.storeUploadedFiles(meta_data, payload, "inputFile")
-    has_image = len(selected_figure) != 0
-    utils.setSubmissionData(payload, "hasImage", has_image)
-
-    if has_image:
-        selected_figure = selected_figure[0]
-
-    # Show the selected image in the input Plotly component.
-    show_figure(payload, selected_figure, input=True)
-
-    # Remove any images from the Result Plotly component.
-    show_figure(payload, "", input=False)
-
-    return payload
 
 
 def process_files(meta_data: dict, payload: dict) -> dict:

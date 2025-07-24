@@ -138,6 +138,27 @@ def _setup_slider(slider):
     }
 
 
+def file_selection_change(meta_data: dict, payload: dict) -> dict:
+    """Process file selection change.
+
+    When a figure is selected, show it in the app. Otherwise notify none selected.
+    """
+    payload, selected_figure = component.File.storeUploadedFiles(meta_data, payload, "inputFile")
+    has_image = len(selected_figure) != 0
+    utils.setSubmissionData(payload, "hasImage", has_image)
+
+    if has_image:
+        selected_figure = selected_figure[0]
+
+    # Show the selected image in the input Plotly component.
+    show_figure(payload, selected_figure, input=True)
+
+    # Remove any images from the Result Plotly component.
+    show_figure(payload, "", input=False)
+
+    return payload
+
+
 def show_figure(payload, selected_figure: str, input: bool = True):
     if input:
         plot_key = "image"
