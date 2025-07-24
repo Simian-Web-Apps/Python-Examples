@@ -160,6 +160,10 @@ def file_selection_change(meta_data: dict, payload: dict) -> dict:
 
 
 def show_figure(payload, selected_figure: str, input: bool = True):
+    """Show the selected figure in the Plotly component.
+
+    Set `input` to True to put in the input image component. Use False to use the result component.
+    """
     if input:
         plot_key = "image"
     else:
@@ -171,6 +175,22 @@ def show_figure(payload, selected_figure: str, input: bool = True):
 
     if not input:
         utils.setSubmissionData(payload, "hasResult", os.path.isfile(selected_figure))
+
+
+def upload_and_show_figure(meta_data, payload, selected_figure: str, nice_name: str) -> dict:
+    """Upload the figure to the ResultFile component and show in the result Plotly component."""
+    if os.path.isfile(selected_figure):
+        component.ResultFile.upload(
+            file_paths=[selected_figure],
+            mime_types=["image/*"],
+            meta_data=meta_data,
+            payload=payload,
+            key="resultFile",
+            file_names=[nice_name],
+        )
+
+    # Show the processed file in the web app.
+    show_figure(payload, selected_figure, input=False)
 
 
 def image_to_plotly(plot_obj, selected_figure: str) -> None:

@@ -9,9 +9,8 @@ from pathlib import Path
 
 import imageprocessing.generic
 from imageprocessing.parts.actions_list import apply_action, initialize_actions
-from imageprocessing.parts.image_panel import show_figure, initialize_images, file_selection_change
+import imageprocessing.parts.image_panel as image_comp
 from simian.gui import Form, utils
-from simian.gui.component import File, ResultFile
 
 
 def gui_init(meta_data: dict) -> dict:
@@ -19,7 +18,7 @@ def gui_init(meta_data: dict) -> dict:
     # Initialize components.
     Form.componentInitializer(
         actionGrid=initialize_actions(process_input_image=True),
-        image_panel=initialize_images(user_image_io=True),
+        image_panel=image_comp.initialize_images(user_image_io=True),
     )
     form = Form(from_file=__file__)
     form.addCustomCss(imageprocessing.generic.get_css())
@@ -37,7 +36,7 @@ def gui_init(meta_data: dict) -> dict:
 def gui_event(meta_data: dict, payload: dict) -> dict:
     """Process app events."""
     Form.eventHandler(
-        FileSelectionChange=file_selection_change,
+        FileSelectionChange=image_comp.file_selection_change,
         ProcessFiles=process_files,
     )
     callback = utils.getEventFunction(meta_data, payload)
@@ -62,18 +61,7 @@ def process_files(meta_data: dict, payload: dict) -> dict:
     apply_action(payload, full_fig, target_fig)
 
     # Put the created file in the ResultFile component for the user to download.
-    if os.path.isfile(target_fig):
-        ResultFile.upload(
-            file_paths=[target_fig],
-            mime_types=["image/*"],
-            meta_data=meta_data,
-            payload=payload,
-            key="resultFile",
-            file_names=[fig],
-        )
-
-        # Show the processed file in the web app.
-        show_figure(payload, target_fig, input=False)
+    image_comp.upload_and_show_figure(meta_data, payload, target_fig, fig)
 
     # Clear session folder to remove temp figures again.
     shutil.rmtree(temp_target_folder, ignore_errors=True)

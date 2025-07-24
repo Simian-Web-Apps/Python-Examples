@@ -8,9 +8,10 @@ from pathlib import Path
 from PIL import Image
 import traceback
 
-from simian.gui import Form, component, utils
+from simian.gui import Form, utils
 import imageprocessing.generic
-from imageprocessing.parts.image_panel import show_figure, initialize_images, file_selection_change
+import imageprocessing.parts.image_panel as image_comp
+
 
 if __name__ == "__main__":
     from simian.local import run
@@ -21,7 +22,7 @@ if __name__ == "__main__":
 def gui_init(meta_data: dict) -> dict:
     """Initialize the app."""
     # Initialize components.
-    Form.componentInitializer(image_panel=initialize_images(user_image_io=True))
+    Form.componentInitializer(image_panel=image_comp.initialize_images(user_image_io=True))
     form = Form(from_file=__file__)
     form.addCustomCss(imageprocessing.generic.get_css())
 
@@ -39,7 +40,7 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     """Process app events."""
     Form.eventHandler(
         ApplyTransform=apply_transform,
-        FileSelectionChange=file_selection_change,
+        FileSelectionChange=image_comp.file_selection_change,
     )
     callback = utils.getEventFunction(meta_data, payload)
     return callback(meta_data, payload)
@@ -81,18 +82,7 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
             target_fig = str(sessionFolder / fig)
             new_image.save(target_fig)
 
-            if os.path.isfile(target_fig):
-                component.ResultFile.upload(
-                    file_paths=[target_fig],
-                    mime_types=["image/*"],
-                    meta_data=meta_data,
-                    payload=payload,
-                    key="resultFile",
-                    file_names=[fig],
-                )
-
-            # Show the processed file in the web app.
-            show_figure(payload, target_fig, input=False)
+            image_comp.upload_and_show_figure(meta_data, payload, target_fig, fig)
 
         except Exception as exc:
             # An error occurred. Notify the user.
