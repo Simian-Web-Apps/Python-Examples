@@ -24,7 +24,7 @@ The imageprocessing package contains four Simian web apps for modifying and gene
 
 - `annotator.image_annotator`
 
-  - Upload images and an optional label definitions file, draw shapes on the figures and select from the predefined labels. When all figures are annotated you can download a .csv file with the annotations.
+  - Upload images and an optional label definitions file, draw shapes on the figures and select from the predefined labels. When all figures are annotated you can download a .csv file with the annotations. The app can be extended with an AI object `detection_model.py` module that runs an object detection algorithm on inputs given by the app and returns the result in the format expected by the app.
 
 
 ## Installation
@@ -34,7 +34,6 @@ The imageprocessing package contains four Simian web apps for modifying and gene
 - requirements.txt                  Dependencies for all apps
 - requirements-imagegen.txt         Dependencies for the image generator app.
 - pytorch/requirements.txt          PyTorch Transform dependencies.
-- annotator/requirements-ai.txt     Optional dependency for using AI to prepare annotations on the figures.
 
 
 ## Actions

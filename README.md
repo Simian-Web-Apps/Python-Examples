@@ -148,6 +148,7 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         python -m run imageprocessing.inpainter.image_inpainter
         python -m run imageprocessing.generator.image_generator
         python -m run imageprocessing.pytorch.image_transform
+        python -m run imageprocessing.annotator.image_annotator
         ```
         
 * **PDF merger**: app for merging (parts of) uploaded PDF files.

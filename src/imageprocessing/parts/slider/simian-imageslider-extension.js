@@ -4,25 +4,14 @@
  */
 async function initImageSlider(component) {
     imgSlider = component.container.getElementsByTagName("img-comparison-slider")[0];
-    // imgSliderInput = component.container.getElementsByTagName("input")[0];
 
     imgSlider.addEventListener("slide", (e) => {
         value = { ...component.value };
         value.sliderValue = Math.round(1000 * e.target.exposure) / 1000;
-        // imgSliderInput.value = value.sliderValue;
 
         // Emit the value change for validation, calculateValue, etc.
         component.valueChange.emit(value);
     });
-
-    // imgSliderInput.addEventListener("input", (e) => {
-    //     value = { ...component.value };
-    //     value.sliderValue = Math.round(1000 * e.target.value) / 1000;
-    //     imgSlider.value = value.sliderValue;
-
-    //     // Emit the value change for validation, calculateValue, etc.
-    //     component.valueChange.emit(value);
-    // });
 
     component.internal.imgSlider = imgSlider;
     // component.internal.imgSliderInput = imgSliderInput;
@@ -39,8 +28,6 @@ async function updateImageSlider(component) {
     component.internal.imgSlider.hover = false;
     component.internal.imgSlider.keyboard = true;
     component.internal.imgSlider.value = component.value.sliderValue;
-
-    // component.internal.imgSliderInput.value = component.value.sliderValue;
 
     if (component.value.img1Url && component.value.img2Url) {
         component.internal.beforeImg.src = component.value.img1Url;

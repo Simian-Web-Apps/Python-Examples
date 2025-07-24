@@ -33,7 +33,6 @@ def run(
     from detectron2.data import MetadataCatalog
 
     cfg = get_cfg()
-    # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
     # https://github.com/facebookresearch/detectron2/blob/main/MODEL_ZOO.md
     cfg.merge_from_file(
         Path(model_zoo.__file__).parents[2]
@@ -44,7 +43,6 @@ def run(
 
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = threshold / 100  # set threshold for this model
 
-    # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(
         "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     )
@@ -66,7 +64,7 @@ def run(
     scores = outputs["instances"].scores.tolist()
 
     if use_boxes:
-        for nr, box in enumerate(outputs["instances"].pred_boxes):
+        for box in outputs["instances"].pred_boxes:
             found_objects.append(
                 {
                     "type": "rect",
@@ -78,7 +76,7 @@ def run(
     else:
         import cv2
 
-        for nr, mask in enumerate(outputs["instances"].pred_masks):
+        for mask in outputs["instances"].pred_masks:
             mask = np.ascontiguousarray(mask)
             res = cv2.findContours(
                 mask.astype("uint8"), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS

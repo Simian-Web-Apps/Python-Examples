@@ -42,6 +42,11 @@ To customize this application
         classification string, an object dicts and confidence score. The object dict must contain
         the "type", "x" and "y" coordinates of the shape [in pixels] with respect to the top-left.
         Type may be one of {"rect", "circle", "line", "path"}.
+
+    ```
+    def run(image_file: str, threshold: float, use_boxes: bool) :
+        return ['unicorn'], [{"type": "rect", "x": [10, 20], "y": [30, 40]}], [95.3]
+    ```
 """
 
 import glob

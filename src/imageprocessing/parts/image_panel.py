@@ -7,6 +7,7 @@ module can be added.
 - the `get_image_names` function can be used for more generic figure handling.
 - the `upload_and_show_figure` function uploads modified figures for users to download and shows it
   in the results Plotly component.
+- the `show_figure` function can be used to show a figure in a Plotly component without uploading it.
 """
 
 import os.path
