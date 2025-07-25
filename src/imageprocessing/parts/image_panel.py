@@ -19,6 +19,15 @@ import plotly.graph_objects as go
 from simian.gui import Form, component, composed_component, utils
 
 
+DOC = """
+The app contains a custom <code>Composed</code> Component `image_panel` with:
+- a <code>File</code> Component for uploading an image file,
+- a <code>ResultFile</code> Component for downloading the modified image,
+- two <code>Plotly</code> Components for showing the selected and modified images, and
+- an <code>Extension</code> component that implements a image comparison slider.
+"""
+
+
 class ImagePanel(composed_component.Builder):
     def __init__(self, parent: component.Composed):
         """ImagePanel constructor."""
@@ -65,7 +74,7 @@ def initialize_images(
     return inner
 
 
-def change_props(new_props: dict):
+def change_props(new_props: dict) -> Callable:
     """Modify component properties."""
 
     def inner(comp):
@@ -75,7 +84,7 @@ def change_props(new_props: dict):
     return inner
 
 
-def change_input_label(new_label: str):
+def change_input_label(new_label: str) -> Callable:
     """Change the label shown above the input image."""
 
     def inner(comp):
@@ -88,7 +97,7 @@ def change_input_label(new_label: str):
 def _setup_plotly(allow_draw: bool = False) -> Callable:
     """Setup Plotly components."""
 
-    def inner(plot_obj):
+    def inner(plot_obj: component.Plotly) -> None:
         plot_obj.figure = go.Figure()
         plot_obj.figure.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}, dragmode=False)
         plot_obj.defaultValue["config"].update(
@@ -121,7 +130,7 @@ def _setup_plotly(allow_draw: bool = False) -> Callable:
     return inner
 
 
-def _setup_slider(slider):
+def _setup_slider(slider: component.Extension) -> None:
     """Setup the image slider component."""
     slider.content = """
 <img-comparison-slider class="img-comparison-slider w-100">
