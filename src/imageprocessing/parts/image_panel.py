@@ -218,7 +218,7 @@ def show_figure(payload, selected_figure: str, input: bool = True):
 
 def upload_and_show_figure(meta_data, payload, selected_figure: str, nice_name: str) -> dict:
     """Upload the figure to the ResultFile, show in the result Plotly, and remove from disk."""
-    if os.path.isfile(selected_figure):
+    if Path(selected_figure).is_file():
         component.ResultFile.upload(
             file_paths=[selected_figure],
             mime_types=["image/*"],
