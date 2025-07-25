@@ -155,7 +155,7 @@
                             "hideLabel": true,
                             "tableView": false,
                             "key": "image",
-                            "customConditional": "show = row.hasImage & !row.imageMode;",
+                            "customConditional": "show = row.hasImage && !(row.imageMode && row.hasResult);",
                             "type": "customplotly",
                             "input": true
                         }
@@ -175,7 +175,7 @@
                             "hideLabel": true,
                             "tableView": false,
                             "key": "resultFigure",
-                            "customConditional": "show = row.hasResult & !row.imageMode;",
+                            "customConditional": "show = row.hasResult && !(row.imageMode && row.hasImage);",
                             "type": "customplotly",
                             "input": true
                         }
@@ -207,7 +207,7 @@
                 "when": "imageMode",
                 "eq": "True"
             },
-            "customConditional": "show=row.imageMode && row.hasResult;",
+            "customConditional": "show=row.imageMode && row.hasImage && row.hasResult;",
             "type": "customextension",
             "input": true
         },
@@ -218,7 +218,7 @@
             "hideLabel": true,
             "tableView": false,
             "key": "imageMode",
-            "customConditional": "show = row.hasResult;",
+            "customConditional": "show = row.hasImage && row.hasResult;",
             "type": "customtoggle",
             "input": true
         }
