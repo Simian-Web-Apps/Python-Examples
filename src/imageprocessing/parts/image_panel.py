@@ -241,7 +241,7 @@ def image_to_plotly(plot_obj, selected_figure: str) -> None:
         # When no figure loaded from the backend, insert an empty one for later use.
         plot_obj.figure = go.Figure()
 
-    if len(selected_figure) == 0:
+    if selected_figure is None or len(selected_figure) == 0:
         img_width = img_height = 1
         image_setup = [{"source": None}]
     else:
