@@ -3,8 +3,11 @@
 https://github.com/facebookresearch/detectron2
 """
 
-from pathlib import Path
+# Requires the detectron2 and cv2 libraries to be available.
+# https://github.com/facebookresearch/detectron2
+# https://github.com/opencv/opencv
 import numpy as np
+from pathlib import Path
 from PIL import Image
 
 
@@ -81,6 +84,9 @@ def run(
             res = cv2.findContours(
                 mask.astype("uint8"), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS
             )
+
+            # Simplify the polygon to reduce the number of points that are almost on or touch the
+            # line between two other points.
             res = cv2.approxPolyDP(res[-2][0], 1, True).flatten()
             found_objects.append(
                 {

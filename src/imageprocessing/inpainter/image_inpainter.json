@@ -19,7 +19,7 @@
                             "value": ""
                         }
                     ],
-                    "content": "This example allows for uploading and selecting parts of an image, configuring an inpainting and modification actions, and downloading the modified image.<br>\n<br>\nThe app contains a custom <code>Composed Component</code> `image_panel` with:<br>\n - a <code>File</code> Component for uploading an image file,<br>\n - a <code>ResultFile</code> Component for downloading the modified image, and<br>\n - two <code>Plotly</code> Components for showing the selected and modified images.<br>\n<br>\nIt also contains a custom <code>Composed Component</code> `actions_list` with:<br>\n - an actions <code>Select</code> component with the image modifications that can be selected, and<br>\n - a Simian <code>PropertyEditor</code> Composed Component for modifying the settings of the selected actions.<br>",
+                    "content": "This example allows for uploading and selecting parts of an image, configuring an inpainting and modification actions, and downloading the modified image.",
                     "refreshOnChange": false,
                     "key": "description",
                     "type": "htmlelement",

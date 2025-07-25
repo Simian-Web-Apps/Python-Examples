@@ -30,8 +30,8 @@ To customize this application
   For instance:
   ```
   Labels
-  rainbow
-  unicorn
+  person
+  car
   ```
 
 
@@ -39,34 +39,34 @@ To customize this application
     - must have a module docstring to be included in the app description panel.
     - must implement a function `run` that accepts the image file, a threshold in %, and a flag to
         return bounding boxes or segmentations as inputs. It must return per detected object a
-        classification string, an object dicts and confidence score. The object dict must contain
-        the "type", "x" and "y" coordinates of the shape [in pixels] with respect to the top-left.
-        Type may be one of {"rect", "circle", "line", "path"}.
+        classification string, an object dicts and confidence score [0-1]. The object dict must
+        contain the "type", "x" and "y" coordinates of the shape [in pixels] with respect to the
+         top-left. Type may be one of {"rect", "circle", "line", "path"}.
 
     ```
     def run(image_file: str, threshold: float, use_boxes: bool) :
-        return ['unicorn'], [{"type": "rect", "x": [10, 20], "y": [30, 40]}], [95.3]
+        return ['person'], [{"type": "rect", "x": [10, 20], "y": [30, 40]}], [.953]
     ```
 """
 
 import glob
 import importlib.util
+import numpy.random
 import os
 import pandas as pd
 from pathlib import Path
-from PIL import Image
 import plotly.graph_objects as go
 
 from simian.gui import Form, component, utils
 
 import imageprocessing.generic
-from imageprocessing.parts.image_panel import image_to_plotly
+import imageprocessing.parts.image_panel as image_comp
 
 
 # Local mode bookkeeping to improve performance
 LOCAL_FILE_LIST = dict()
 
-DESCR_START = """Simian image annotator app to add shapes to an image and classify with labels.\n\n
+DESCR_START = """Simian image annotator app to add shapes to an image and classify with labels.\n
 """
 DESCR_LOCAL_MODE = """Select a folder with images to annotate and the annotations .csv file to write to.
 
@@ -113,7 +113,35 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
         RegisterLabel=new_label,
     )
     callback = utils.getEventFunction(meta_data, payload)
-    return callback(meta_data, payload)
+    payload = callback(meta_data, payload)
+
+    # During all events ensure the number of shapes and label rows match. (No event from Plotly)
+    check_nr_annotations(payload)
+    return payload
+
+
+def check_nr_annotations(payload):
+    """Ensure the number of annotation table rows matches the number of shapes in the figure."""
+    plot_obj, _ = utils.getSubmissionData(payload, "loadedImage")
+    nr_figure_shapes = len(plot_obj.figure.layout.shapes)
+    label_table, _ = utils.getSubmissionData(payload, "annotations")
+    nr_table_labels = len(label_table)
+
+    if (to_add := nr_figure_shapes - nr_table_labels) > 0:
+        # The figure contains more labels than the table. Expand the table.
+        label_table += [
+            {
+                "labels": "",
+                "confidenceScore": None,
+                "shapeNumber": nr_table_labels + nr + 1,
+                "rowId": "add" + str(numpy.random.random()),
+            }
+            for nr in range(0, to_add)
+        ]
+
+        # Update the annotations table and the figure numbers.
+        _set_annotations_table(payload, new_table=label_table)
+        update_shape_numbers(payload, plot_obj)
 
 
 def load_first(meta_data: dict, payload: dict) -> dict:
@@ -156,13 +184,17 @@ def shape_number(meta_data: dict, payload: dict) -> dict:
                 if ii != removed_index
             ]
 
-    # Update the shape numbers in the plot.
+    update_shape_numbers(payload, plot_obj)
+    utils.setSubmissionData(payload, "registeredRowIds", rowIds)
+    return payload
+
+
+def update_shape_numbers(payload, plot_obj):
+    """Update the shape numbers in the plot."""
     for nr, shape in enumerate(plot_obj.figure.layout.shapes):
         shape["label"] = new_shape_label(payload, nr)
 
     utils.setSubmissionData(payload, "loadedImage", plot_obj)
-    utils.setSubmissionData(payload, "registeredRowIds", rowIds)
-    return payload
 
 
 def new_shape_label(payload: dict, nr: int) -> dict:
@@ -268,10 +300,14 @@ def add_description(meta_data):
             import imageprocessing.annotator.detection_model as model
 
             txt += (
-                """\nObject detection model included:
+                """
+Object detection model included:
 Select a confidence threshold, whether to draw boxes or segmentations in the plot, and click rerun when needed.\n\n"""
                 + model.__doc__
             )
+
+        # Add the Image Panel DOC.
+        txt += image_comp.DOC
 
         txt = txt.removeprefix("\n")
         comp.defaultValue = txt.replace("\n", "<br>")
@@ -316,11 +352,11 @@ def _show_next_figure(meta_data, payload, plot_obj) -> None:
     """Get the next figure and show it in the plotly component."""
     next_figure, nice_file_name = _get_next_figure(meta_data, payload)
     try:
-        image_to_plotly(plot_obj, next_figure)
+        image_comp.image_to_plotly(plot_obj, next_figure)
     except Exception:
         # File could not be shown, clear the plotly component.
         utils.addAlert(payload, f"Unable to show {nice_file_name}", "danger")
-        image_to_plotly(plot_obj, None)
+        image_comp.image_to_plotly(plot_obj, None)
         nice_file_name = None
 
     # Remove any shapes.
