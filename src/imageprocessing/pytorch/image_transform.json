@@ -1,0 +1,63 @@
+{
+    "components": [
+        {
+            "title": "Description",
+            "collapsible": true,
+            "key": "descriptionPanel",
+            "type": "panel",
+            "label": "Description",
+            "collapsed": true,
+            "input": false,
+            "tableView": false,
+            "components": [
+                {
+                    "label": "Description",
+                    "className": "lead",
+                    "attrs": [
+                        {
+                            "attr": "",
+                            "value": ""
+                        }
+                    ],
+                    "content": "This example allows for uploading an image, specifying PyTorch Transform actions, and downloading the modified image.<br><br>The combination method allows for combining the selected Transforms in the following manners:<br> - <code>Compose</code>:      Composes several transforms together.<br> - <code>RandomApply</code>:  Apply randomly a list of transformations with a given probability.<br> - <code>RandomChoice</code>: Apply single transformation randomly picked from a list.<br> - <code>RandomOrder</code>:  Apply a list of transformations in a random order.<br><br>Note that the app may show Python Pillow or PyTorch error messages when a Transform method is unable to handle an input image or setting.<br><br>It also contains a custom <code>DataGrid</code> Component `actions_list` with:<br> - a Transforms <code>Select</code> component with the image transformations that can be selected, and<br> - a Simian <code>PropertyEditor</code> Composed Component for modifying the settings of the selected Transforms.<br>",
+                    "refreshOnChange": false,
+                    "key": "description",
+                    "type": "htmlelement",
+                    "input": false,
+                    "tableView": false
+                }
+            ]
+        },
+        {
+            "label": "Images",
+            "className": "imageprocessing.parts.image_panel.ImagePanel",
+            "displayHeight": 100,
+            "hideLabel": true,
+            "tableView": false,
+            "key": "image_panel",
+            "type": "customcomposed",
+            "input": true
+        },
+        {
+            "label": "Tranformers",
+            "hideLabel": true,
+            "className": "imageprocessing.parts.transform.TransformList",
+            "displayHeight": 100,
+            "tableView": false,
+            "key": "tranformers",
+            "type": "customcomposed",
+            "input": true
+        },
+        {
+            "label": "Apply",
+            "showValidations": false,
+            "disableOnInvalid": true,
+            "tableView": false,
+            "key": "apply",
+            "type": "button",
+            "action": "event",
+            "input": true,
+            "event": "ApplyTransform"
+        }
+    ]
+}

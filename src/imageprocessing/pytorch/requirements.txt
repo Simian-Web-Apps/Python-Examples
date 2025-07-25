@@ -1,0 +1,2 @@
+# Extra requirements for the pytorch.transform_app
+torchvision~=0.22

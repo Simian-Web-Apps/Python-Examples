@@ -1,0 +1,52 @@
+.before,
+.after {
+    margin: 0;
+}
+
+.before figcaption,
+.after figcaption {
+    background: #fff;
+    border: 1px solid #c0c0c0;
+    border-radius: 12px;
+    color: #2e3452;
+    opacity: 0.7;
+    padding: 12px;
+    position: absolute;
+    line-height: 100%;
+}
+
+.before figcaption {
+    left: 12px;
+}
+
+.after figcaption {
+    right: 12px;
+}
+
+img-comparison-slider[direction="horizontal"] {
+    .before figcaption {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+img-comparison-slider[direction="horizontal"] {
+    .after figcaption {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+img-comparison-slider[direction="vertical"] {
+    .before figcaption {
+        top: 10%;
+        transform: translateY(-10%);
+    }
+}
+
+img-comparison-slider[direction="vertical"] {
+    .after figcaption {
+        top: 90%;
+        transform: translateY(-90%);
+    }
+}

@@ -2,7 +2,7 @@
 
 from typing import Union
 
-from imageprocessing.actions_list import ImageAction
+from imageprocessing.parts.actions_list import ImageAction
 from PIL import Image
 
 
