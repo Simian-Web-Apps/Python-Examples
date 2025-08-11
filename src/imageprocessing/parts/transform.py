@@ -9,11 +9,57 @@ import importlib
 import json
 import re
 from typing import List, Tuple, Sequence
-import torch
 from simian.gui import Form, component, composed_component, utils
 
 
-TRANSFORMERS = {}
+TRANSFORM_LIST = [
+    "AugMix",
+    "AutoAugment",
+    "CenterCrop",
+    "ClampBoundingBoxes",
+    "ColorJitter",
+    "ConvertBoundingBoxFormat",
+    "ElasticTransform",
+    "FiveCrop",
+    "GaussianBlur",
+    "GaussianNoise",
+    "Grayscale",
+    "Identity",
+    "JPEG",
+    "Normalize",
+    "PILToTensor",
+    "Pad",
+    "RGB",
+    "RandAugment",
+    "RandomAdjustSharpness",
+    "RandomAffine",
+    "RandomAutocontrast",
+    "RandomChannelPermutation",
+    "RandomCrop",
+    "RandomEqualize",
+    "RandomErasing",
+    "RandomGrayscale",
+    "RandomHorizontalFlip",
+    "RandomInvert",
+    "RandomPerspective",
+    "RandomPhotometricDistort",
+    "RandomPosterize",
+    "RandomResize",
+    "RandomResizedCrop",
+    "RandomRotation",
+    "RandomShortestSize",
+    "RandomSolarize",
+    "RandomVerticalFlip",
+    "RandomZoomOut",
+    "Resize",
+    "TenCrop",
+    "ToDtype",
+    "ToImage",
+    "ToPILImage",
+    "ToPureTensor",
+    "TrivialAugmentWide",
+]
+
 # Class constructor, probabilities
 CONTAINERS = {
     "PyTorch_Vision v2": {
@@ -52,9 +98,6 @@ class TransformList(composed_component.Builder):
     def __init__(self, parent: component.Composed):
         super().__init__()
 
-        # Import the available PyTorch Vision Transform classes.
-        get_transformers()
-
         # Ensure the composed component' components are filled with the appropriate Torch classes.
         Form.componentInitializer(
             availableTransforms=fill_transform_list,
@@ -74,6 +117,7 @@ def get_composed_transform(payload: dict):
     Returns:
         Combination of Transforms, or None.
     """
+    update_containers()
     combo_method, _ = utils.getSubmissionData(payload, "combinationMethod")
     overall_prob, _ = utils.getSubmissionData(payload, "overallProbability")
     transform_table, _ = utils.getSubmissionData(payload, "tranforms")
@@ -83,7 +127,7 @@ def get_composed_transform(payload: dict):
     for transform_row in transform_table:
         row = transform_row["transform"]
         name = row["registeredTransform"]
-        transformer = TRANSFORMERS["PyTorch_Vision v2"][name]
+        transformer = get_transform(name)
         values = composed_component.PropertyEditor.get_values(row["parameters"])
 
         # Get the probability per Transform row.
@@ -92,7 +136,13 @@ def get_composed_transform(payload: dict):
         # Build the Transform instances based on the constructors and selected inputs.
         values, _ = convert_values(transformer, values)
         try:
-            trans_list += [transformer(*values)]
+            # Get the number of positional arguments and process the keyword arguments.
+            spec = inspect.getfullargspec(transformer)
+            nr = len(set(spec.args) - {"self"})
+
+            trans_list += [
+                transformer(*values[0:nr], **{k: v for k, v in zip(spec.kwonlyargs, values[nr::])})
+            ]
         except Exception as exc:
             utils.addAlert(payload, f"Failed to create Transform {name}: {exc}", "danger")
 
@@ -114,10 +164,16 @@ def get_composed_transform(payload: dict):
     return ct
 
 
-def get_transformers(version_nr: int = 2):
-    """Import the available PyTorch Vision Transform classes."""
-    "torch.nn.Module"
-    from torchvision.transforms.v2 import Transform  # 'Delay' import: future support older versions
+def get_transform(name):
+    """Get the Transform subclass."""
+    mod = importlib.import_module("torchvision.transforms.v2")
+    return getattr(mod, name)
+
+
+def _update_transformers():
+    """Maintenance utility function to get and print the available PyTorch Vision Transform classes."""
+    # Transformers dict not yet filled.
+    from torchvision.transforms.v2 import Transform  # 'Delay' import
 
     v2_classes = _get_transformers("torchvision.transforms.v2", Transform)
 
@@ -127,14 +183,20 @@ def get_transformers(version_nr: int = 2):
         for name in skip_classes.keys():
             v2_classes.pop(name, None)
 
-    TRANSFORMERS.update({"PyTorch_Vision v2": v2_classes})
+    print(v2_classes)
 
-    # Get the PyTorch Vision combination classes and put the constructors in the list.
-    containers = _get_transformers("torchvision.transforms.v2._container", Transform)
-    containers.pop("Transform")
 
-    for key, constr in containers.items():
-        CONTAINERS["PyTorch_Vision v2"][key][0] = constr
+def update_containers():
+    """Update the dict with the Transform containers."""
+    if CONTAINERS.get("PyTorch_Vision v2", {}).get("Compose", [None])[0] is None:
+        from torchvision.transforms.v2 import Transform  # 'Delay' import
+
+        # Get the PyTorch Vision combination classes and put the constructors in the list.
+        containers = _get_transformers("torchvision.transforms.v2._container", Transform)
+        containers.pop("Transform")
+
+        for key, constr in containers.items():
+            CONTAINERS["PyTorch_Vision v2"][key][0] = constr
 
 
 def fill_methods_list(comp: component.Select) -> None:
@@ -144,7 +206,7 @@ def fill_methods_list(comp: component.Select) -> None:
 
 def fill_transform_list(comp: component.Select) -> None:
     """Fill the available Transforms list."""
-    comp.defaultValue = [{"label": x, "value": x} for x in TRANSFORMERS["PyTorch_Vision v2"].keys()]
+    comp.defaultValue = [{"label": x, "value": x} for x in TRANSFORM_LIST]
 
 
 def _get_transformers(module_name: str, super_class: str) -> dict[str, callable]:
@@ -163,8 +225,25 @@ def _get_transformers(module_name: str, super_class: str) -> dict[str, callable]
     return classes
 
 
+def _get_transformer_cache(meta_data: dict) -> dict:
+    transformer_cache, is_found = utils.getCache(meta_data, "transformer_cache")
+    if not is_found:
+        transformer_cache = {}
+
+        for transform in TRANSFORM_LIST:
+            transformer = get_transform(transform)
+            params, doc_dict = get_params(transformer)
+
+            transformer_cache.update({transform: [params, doc_dict]})
+
+        utils.setCache(meta_data, "transformer_cache", transformer_cache)
+
+    return transformer_cache
+
+
 def NewTransformer(meta_data: dict, payload: dict) -> dict:
     """New transformer has been selected"""
+    transformer_cache = _get_transformer_cache(meta_data)
 
     transform_table, _ = utils.getSubmissionData(payload, "tranforms")
     for row in transform_table:
@@ -178,8 +257,7 @@ def NewTransformer(meta_data: dict, payload: dict) -> dict:
                 params = []
                 doc_dict = {}
             else:
-                transformer = TRANSFORMERS["PyTorch_Vision v2"][transform]
-                params, doc_dict = get_params(transformer)
+                params, doc_dict = transformer_cache.get(transform, [[], {}])
 
             row["tranformer_doc"] = doc_dict.get("main", None)
             row["parameters"] = composed_component.PropertyEditor.prepare_values(params)
@@ -212,9 +290,15 @@ def process_callable(wrapped_func: callable) -> callable:
         real_args = spec.args
         if "self" in real_args:
             real_args.remove("self")
-        doc_dict = _split_docs(func.__doc__, real_args)
 
         defaults = _ensure_defaults_list(spec.defaults, len(real_args))
+
+        for key in spec.kwonlyargs:
+            # Add keyword only arguments.
+            real_args += [key]
+            defaults += [spec.kwonlydefaults.get(key, None)]
+
+        doc_dict = _split_docs(func.__doc__, real_args)
 
         if len(args) == 0:
             ii_args = [[]] * len(real_args)
@@ -248,6 +332,8 @@ def convert_values(label, default, annotation, par_doc, value) -> Tuple[List[dic
         elif hasattr(value, "__iter__"):
             value = [float(val) if isinstance(val, int) else val for val in value]
     elif "dtype" in annotation:
+        import torch  # TORCH_TYPES dropdown.
+
         value = eval(value)  # Value stems from a Select component.
 
     return value
@@ -260,7 +346,7 @@ def get_params(label, default, annotation, par_doc) -> Tuple[List[dict], dict]:
 
     if "Sequence" in annotation:
         extra_options = extra_options | {"minLength": 1, "maxLength": 100}
-    elif isinstance(default, Sequence):
+    elif isinstance(default, Sequence) and not isinstance(default, str):
         extra_options = extra_options | {"minLength": len(default), "maxLength": len(default)}
 
     if isinstance(default, enum.Enum):

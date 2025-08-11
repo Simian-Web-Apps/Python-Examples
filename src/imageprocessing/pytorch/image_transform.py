@@ -21,7 +21,8 @@ def gui_init(meta_data: dict) -> dict:
     """Initialize the app."""
     # Initialize components.
     Form.componentInitializer(
-        image_panel=image_comp.initialize_images(user_image_io=True), description=extend_description
+        image_panel=image_comp.initialize_images(user_image_io=True),
+        description=extend_description,
     )
     form = Form(from_file=__file__)
     form.addCustomCss(imageprocessing.generic.get_css())
@@ -72,11 +73,11 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
 
             if not isinstance(new_image, Image.Image):
                 # new "Image" cannot be shown in the UI nor saved. Attempt to convert it to Image.
-                from imageprocessing.parts.transform import TRANSFORMERS
+                from imageprocessing.parts.transform import get_transform
 
                 mode = [None, "L", None, "RGB", "RGBA"][new_image.size()[0]]
 
-                to_pil_transformer = TRANSFORMERS["PyTorch_Vision v2"]["ToPILImage"](mode)
+                to_pil_transformer = get_transform("ToPILImage")(mode)
                 new_image = to_pil_transformer(new_image)
 
             # Save the created figure in the session folder. and put it in the ResultFile.
