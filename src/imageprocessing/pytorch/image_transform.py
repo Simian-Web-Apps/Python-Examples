@@ -9,6 +9,7 @@ import traceback
 from simian.gui import Form, utils
 import imageprocessing.generic
 import imageprocessing.parts.image_panel as image_comp
+import imageprocessing.parts.transform as transform_comp
 
 
 if __name__ == "__main__":
@@ -54,14 +55,12 @@ def extend_description(comp):
 
 def apply_transform(meta_data: dict, payload: dict) -> dict:
     """Apply the transformations to the input image."""
-    import imageprocessing.parts.transform
-
     _, new_name, target_fig, orig_figure = image_comp.get_image_names(meta_data, payload)
 
     im = Image.open(orig_figure)
 
     # Create the PyTorch Vision Transform chain.
-    composed_transform = imageprocessing.parts.transform.get_composed_transform(payload)
+    composed_transform = transform_comp.get_composed_transform(payload)
 
     if composed_transform:
         try:
@@ -73,11 +72,9 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
 
             if not isinstance(new_image, Image.Image):
                 # new "Image" cannot be shown in the UI nor saved. Attempt to convert it to Image.
-                from imageprocessing.parts.transform import get_transform
-
                 mode = [None, "L", None, "RGB", "RGBA"][new_image.size()[0]]
 
-                to_pil_transformer = get_transform("ToPILImage")(mode)
+                to_pil_transformer = transform_comp.get_transform("ToPILImage")(mode)
                 new_image = to_pil_transformer(new_image)
 
             # Save the created figure in the session folder. and put it in the ResultFile.
