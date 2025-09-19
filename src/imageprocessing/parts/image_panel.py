@@ -132,19 +132,6 @@ def _setup_plotly(allow_draw: bool = False) -> Callable:
 
 def _setup_slider(slider: component.Extension) -> None:
     """Setup the image slider component."""
-    slider.content = """
-<img-comparison-slider class="img-comparison-slider w-100">
-    <figure slot="first" class="before">
-        <img class="w-100">
-        <figcaption>Before</figcaption>
-    </figure>
-    <figure slot="second" class="after">
-        <img class="w-100">
-        <figcaption>After</figcaption>
-    </figure>
-</img-comparison-slider>
-"""
-
     slider.defaultValue = {
         "sliderValue": 50,
         "direction": "horizontal",

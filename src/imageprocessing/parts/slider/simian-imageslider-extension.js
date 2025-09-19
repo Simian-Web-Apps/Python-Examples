@@ -3,20 +3,44 @@
  * @param {object} component Extension component data.
  */
 async function initImageSlider(component) {
-    imgSlider = component.container.getElementsByTagName("img-comparison-slider")[0];
+    component.internal.initReady = new Promise((resolve) => {
+        window.customElements.whenDefined("img-comparison-slider").then(() => {
+            let observer = new MutationObserver((mutations, observer) => {
+                observer.disconnect();
+            imgSlider = component.container.getElementsByTagName("img-comparison-slider")[0];
 
-    imgSlider.addEventListener("slide", (e) => {
-        value = { ...component.value };
-        value.sliderValue = Math.round(1000 * e.target.exposure) / 1000;
+            imgSlider.addEventListener("slide", (e) => {
+                value = { ...component.value };
+                value.sliderValue = Math.round(1000 * e.target.exposure) / 1000;
 
-        // Emit the value change for validation, calculateValue, etc.
-        component.valueChange.emit(value);
+                // Emit the value change for validation, calculateValue, etc.
+                component.valueChange.emit(value);
+            });
+
+            component.internal.imgSlider = imgSlider;
+            // component.internal.imgSliderInput = imgSliderInput;
+            component.internal.beforeImg = imgSlider.querySelector(".before img");
+            component.internal.afterImg = imgSlider.querySelector(".after img");
+    
+                resolve(true);
+            });
+
+            observer.observe(component.container, { attributes: true, childList: true, subtree: true });
+
+            component.container.innerHTML = `
+            <img-comparison-slider class="img-comparison-slider w-100">
+                <figure slot="first" class="before">
+                    <img class="w-100">
+                    <figcaption>Before</figcaption>
+                </figure>
+                <figure slot="second" class="after">
+                    <img class="w-100">
+                    <figcaption>After</figcaption>
+                </figure>
+            </img-comparison-slider>
+            `;
+        });
     });
-
-    component.internal.imgSlider = imgSlider;
-    // component.internal.imgSliderInput = imgSliderInput;
-    component.internal.beforeImg = imgSlider.querySelector(".before img");
-    component.internal.afterImg = imgSlider.querySelector(".after img");
 }
 
 /**
@@ -24,18 +48,20 @@ async function initImageSlider(component) {
  * @param {object} component Extension component data.
  */
 async function updateImageSlider(component) {
-    component.internal.imgSlider.direction = component.value.direction;
-    component.internal.imgSlider.hover = false;
-    component.internal.imgSlider.keyboard = true;
-    component.internal.imgSlider.value = component.value.sliderValue;
+    component.internal.initReady.then(() => {
+        component.internal.imgSlider.direction = component.value.direction;
+        component.internal.imgSlider.hover = false;
+        component.internal.imgSlider.keyboard = true;
+        component.internal.imgSlider.value = component.value.sliderValue;
 
-    if (component.value.img1Url && component.value.img2Url) {
-        component.internal.beforeImg.src = component.value.img1Url;
-        component.internal.afterImg.src = component.value.img2Url;
-    } else {
-        component.internal.beforeImg.src = getDefaultImage(1);
-        component.internal.afterImg.src = getDefaultImage(2);
-    }
+        if (component.value.img1Url && component.value.img2Url) {
+            component.internal.beforeImg.src = component.value.img1Url;
+            component.internal.afterImg.src = component.value.img2Url;
+        } else {
+            component.internal.beforeImg.src = getDefaultImage(1);
+            component.internal.afterImg.src = getDefaultImage(2);
+        }
+    });
 }
 
 /**
