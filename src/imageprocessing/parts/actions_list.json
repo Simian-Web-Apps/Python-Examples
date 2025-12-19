@@ -23,6 +23,36 @@
             "tableView": false
         },
         {
+            "label": "ChangedActionRow",
+            "logic": [
+                {
+                    "name": "SelectChanged",
+                    "trigger": {
+                        "type": "javascript",
+                        "javascript": "result = row.imageProcessingActions.some(r => r.action1.action && r.action1.action !== r.action1.registeredAction);"
+                    },
+                    "actions": [
+                        {
+                            "name": "UpdateValue",
+                            "type": "value",
+                            "value": "let idx = row.imageProcessingActions.findIndex(r => r.action1.action && r.action1.action !== r.action1.registeredAction); value = [idx, row.imageProcessingActions[idx].action1.action]"
+                        }
+                    ]
+                }
+            ],
+            "key": "changedActionRow",
+            "defaultValue": [
+                -1,
+                ""
+            ],
+            "properties": {
+                "triggerHappy": "imageprocessing.parts.actions_list.action_changed"
+            },
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
             "label": "<b>Image processing actions</b>",
             "reorder": true,
             "addAnother": "Add action",
@@ -57,9 +87,7 @@
                             "widget": "choicesjs",
                             "tableView": true,
                             "dataSrc": "custom",
-                            "defaultValue": [
-                                ""
-                            ],
+                            "defaultValue": "",
                             "data": {
                                 "custom": "sub_data = utils.getValue(submission, instance.parent.parent.parent.path); if (rowIndex == 0 && !sub_data.hasAStartingImage) {values = sub_data.actionList2} else {values = sub_data.actionList};"
                             },
@@ -69,15 +97,13 @@
                                 "custom": "valid = input.length !== 0 && input[0] !== ''"
                             },
                             "key": "action",
-                            "properties": {
-                                "triggerHappy": "imageprocessing.parts.actions_list.action_changed"
-                            },
                             "type": "select",
                             "input": true
                         },
                         {
                             "label": "registeredAction",
                             "key": "registeredAction",
+                            "defaultValue": "",
                             "type": "hidden",
                             "input": true,
                             "tableView": false
