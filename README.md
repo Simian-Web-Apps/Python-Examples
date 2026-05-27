@@ -10,7 +10,7 @@ During runtime, the Simian frontend renders the defined web app directly from Py
 
 ### Dependencies
 
-* Simian GUI runs and is tested on Python `3.8` to `3.11`.
+* Simian GUI runs and is tested on Python `3.10` to `3.13`.
 
 ### Installing
 
@@ -25,7 +25,7 @@ During runtime, the Simian frontend renders the defined web app directly from Py
     * `simian-builder` contains the builder
 
     ```
-    pip install --extra-index-url https://pypi.simiansuite.com/simple/ simian-gui[redis] simian-local simian-examples simian-builder
+    pip install simian-gui[redis] simian-local simian-examples simian-builder
     ```
 
 ### Running Examples
