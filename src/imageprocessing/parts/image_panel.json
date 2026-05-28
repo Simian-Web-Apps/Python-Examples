@@ -198,7 +198,6 @@
             "hideLabel": true,
             "tableView": false,
             "content": "<p>Hello, world!</p>",
-            "renderFn": "renderImageSlider",
             "attachFn": "attachImageSlider",
             "getValueFn": "getValueImageSlider",
             "setValueFn": "setValueImageSlider",

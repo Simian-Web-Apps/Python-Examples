@@ -1,14 +1,4 @@
 /**
- * This method is used to render a component as an HTML string.
- * 
- * @returns HTML string for the extension component.
- */
-function renderImageSlider() {
-    // The render function is synchronous, so we cannot wait here until the custom img-comparison-slider tag is defined.
-    return '';
-}
-
-/**
  * The attach method is called after "render" which takes the rendered contents
  * from the render method (which are by this point already added to the DOM), and
  * then "attach" this component logic to that HTML. This is where you would load
@@ -23,6 +13,7 @@ async function attachImageSlider(element) {
         extension: 'single',
     });
 
+    // Get the Extension component's html <div> container with ref="extension".
     let container = this.refs.extension;
 
     if (container) {
