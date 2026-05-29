@@ -1,33 +1,47 @@
 /**
- * Initialize function for the image slider. Called by the extension component.
- * @param {object} component Extension component data.
+ * The attach method is called after "render" which takes the rendered contents
+ * from the render method (which are by this point already added to the DOM), and
+ * then "attach" this component logic to that HTML. This is where you would load
+ * any references within your templates (which use the "ref" attribute) to assign
+ * them to the "this.refs" component variable using the loadRefs method.
+ * 
+ * @param element The parent DOM tree element that contains the extension component.
+ * @returns Promise that will resolve when the attach code is ready.
  */
-async function initImageSlider(component) {
-    component.internal.initReady = new Promise((resolve) => {
-        window.customElements.whenDefined("img-comparison-slider").then(() => {
+async function attachImageSlider(element) {
+    this.loadRefs(element, {
+        extension: 'single',
+    });
+
+    // Get the Extension component's html <div> container with ref="extension".
+    let container = this.refs.extension;
+
+    if (container) {
+        // This function is asynchronous, so here we wait for the custom img-comparison-slider tag to be defined.
+        await window.customElements.whenDefined("img-comparison-slider");
+
+        return new Promise((resolve) => {
+            // Before we can assign event listeners, we need to wait for the elements to be created in the DOM tree.
+            // Hence, we set up an observer to wait for the elements to be created.
             let observer = new MutationObserver((mutations, observer) => {
                 observer.disconnect();
-            imgSlider = component.container.getElementsByTagName("img-comparison-slider")[0];
 
-            imgSlider.addEventListener("slide", (e) => {
-                value = { ...component.value };
-                value.sliderValue = Math.round(1000 * e.target.exposure) / 1000;
+                let imgSlider = container.getElementsByTagName("img-comparison-slider")[0];
 
-                // Emit the value change for validation, calculateValue, etc.
-                component.valueChange.emit(value);
-            });
+                imgSlider.addEventListener("slide", (e) => {
+                    let value = this.getValue();
+                    value.sliderValue = Math.round(1000 * e.target.exposure) / 1000;
+                    this.setValue(value);
+                });
 
-            component.internal.imgSlider = imgSlider;
-            // component.internal.imgSliderInput = imgSliderInput;
-            component.internal.beforeImg = imgSlider.querySelector(".before img");
-            component.internal.afterImg = imgSlider.querySelector(".after img");
-    
+                this.setValue(this.dataValue);
                 resolve(true);
             });
 
-            observer.observe(component.container, { attributes: true, childList: true, subtree: true });
+            observer.observe(container, { attributes: true, childList: true, subtree: true });
 
-            component.container.innerHTML = `
+            // Now we can change the elements in the component, using the custom img-comparison-slider tag.
+            container.innerHTML = `
             <img-comparison-slider class="img-comparison-slider w-100">
                 <figure slot="first" class="before">
                     <img class="w-100">
@@ -40,28 +54,54 @@ async function initImageSlider(component) {
             </img-comparison-slider>
             `;
         });
-    });
-}
+    }
+};
 
 /**
- * Update function for the image slider. Called by the extension component.
- * @param {object} component Extension component data.
+ * Returns the value of the "view" data for this component.
+ *
+ * @return The value for this whole component.
  */
-async function updateImageSlider(component) {
-    component.internal.initReady.then(() => {
-        component.internal.imgSlider.direction = component.value.direction;
-        component.internal.imgSlider.hover = false;
-        component.internal.imgSlider.keyboard = true;
-        component.internal.imgSlider.value = component.value.sliderValue;
+function getValueImageSlider() {
+    let container = this.refs.extension;
+    let imgSlider = container.getElementsByTagName("img-comparison-slider")[0];
 
-        if (component.value.img1Url && component.value.img2Url) {
-            component.internal.beforeImg.src = component.value.img1Url;
-            component.internal.afterImg.src = component.value.img2Url;
-        } else {
-            component.internal.beforeImg.src = getDefaultImage(1);
-            component.internal.afterImg.src = getDefaultImage(2);
+    return {
+        "sliderValue": imgSlider.value,
+        "direction": imgSlider.direction,
+        "img1Url": imgSlider.querySelector(".before img").src,
+        "img2Url": imgSlider.querySelector(".after img").src,
+    }
+}
+
+
+/**
+ * Sets the value of both the data and view of the component (such as setting the
+ * <input> value to the correct value of the data. This is most commonly used
+ * externally to set the value and also see that value show up in the view of the
+ * component. If you wish to only set the data of the component, like when you are
+ * responding to an HTML input event, then updateValue should be used instead since
+ * it only sets the data value of the component and not the view. 
+ *
+ * @param value The value that is being set for this component's data and view.
+ * @param flags Change propagation flags that are being used to control behavior of the
+ *              change propagation logic.
+ */
+function setValueImageSlider(value, flags) {
+    let container = this.refs.extension;
+
+    if (container) {
+        let imgSlider = container.getElementsByTagName("img-comparison-slider")[0];
+
+        // Setting the direction triggers another value change. Hence, we check the value to avoid infinite recursion.
+        if (imgSlider.direction !== value.direction) {
+            imgSlider.direction = value.direction;
         }
-    });
+
+        imgSlider.value = value.sliderValue;
+        imgSlider.querySelector(".before img").src = value.img1Url ?? getDefaultImage(1);
+        imgSlider.querySelector(".after img").src = value.img2Url ?? getDefaultImage(2);
+    }
 }
 
 /**
