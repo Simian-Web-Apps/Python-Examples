@@ -150,7 +150,16 @@ For running apps locally, we assume that the `src` folder is on the Python path.
         python -m run imageprocessing.pytorch.image_transform
         python -m run imageprocessing.annotator.image_annotator
         ```
-        
+* **ComfyUI WebApp** app showing the Simian - ComfyUI WebApp API integration.
+
+    * Install additional dependencies
+        ```
+        pip install -r comfyui/requirements.txt
+
+    * Then start the apps using the `run` module
+        ```
+        python -m run comfyui.webapp      ```
+
 * **PDF merger**: app for merging (parts of) uploaded PDF files.
     * Install additional dependencies
         ```
