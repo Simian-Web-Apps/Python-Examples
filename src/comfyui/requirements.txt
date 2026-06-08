@@ -1,2 +1,2 @@
-simian-comfy @ git+https://github.com/Simian-Web-Apps/Simian-ComfyUI-WebApps.git
+simian-comfy-webapps @ git+https://github.com/Simian-Web-Apps/Simian-ComfyUI-WebApps.git
 simian-gui
