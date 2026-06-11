@@ -85,7 +85,7 @@ def apply_transform(meta_data: dict, payload: dict) -> dict:
 
         except Exception as exc:
             # An error occurred. Notify the user.
-            utils.addAlert(payload, f"Failed to transform the input image: {exc}", "danger")
+            utils.addAlert(payload, f"Invalid Pytorch image transform sequence: {exc}", "danger")
             traceback.print_exception(exc)
 
     return payload
