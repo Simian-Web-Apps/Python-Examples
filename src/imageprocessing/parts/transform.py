@@ -246,23 +246,27 @@ def NewTransformer(meta_data: dict, payload: dict) -> dict:
     transformer_cache = _get_transformer_cache(meta_data)
 
     transform_table, _ = utils.getSubmissionData(payload, "tranforms")
-    for row in transform_table:
-        row = row["transform"]
 
-        old_sel = row["registeredTransform"]
-        if (transform := row["selectedTransformer"]) != old_sel:
-            # New Transformer selected in this row.
-            row["registeredTransform"] = transform
-            if transform == [""] or transform == "":
-                params = []
-                doc_dict = {}
-            else:
-                params, doc_dict = transformer_cache.get(transform, [[], {}])
+    # Changed action row bookkeeping. Get the values, and register the changed action in the data.
+    changed_row_nr, transform = utils.getSubmissionData(payload, "changedTransformRow")[0]
 
-            row["tranformer_doc"] = doc_dict.get("main", None)
-            row["parameters"] = composed_component.PropertyEditor.prepare_values(params)
+    if changed_row_nr == -1:
+        # Invalid selection from front-end.
+        pass
+    else:
+        row = transform_table[changed_row_nr]["transform"]
 
-    utils.setSubmissionData(payload, "tranforms", transform_table)
+        row["registeredTransform"] = transform
+        if transform == [""] or transform == "":
+            params = []
+            doc_dict = {}
+        else:
+            params, doc_dict = transformer_cache.get(transform, [[], {}])
+
+        row["tranformer_doc"] = doc_dict.get("main", None)
+        row["parameters"] = composed_component.PropertyEditor.prepare_values(params)
+
+        utils.setSubmissionData(payload, "tranforms", transform_table)
 
     return payload
 
