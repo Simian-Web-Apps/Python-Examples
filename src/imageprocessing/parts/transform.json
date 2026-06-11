@@ -65,6 +65,36 @@
             "input": true
         },
         {
+            "label": "changedTransformRow",
+            "logic": [
+                {
+                    "name": "SelectChanged",
+                    "trigger": {
+                        "type": "javascript",
+                        "javascript": "result = row.tranforms.some(r => r.transform.selectedTransformer && r.transform.selectedTransformer !== r.transform.registeredTransform);"
+                    },
+                    "actions": [
+                        {
+                            "name": "UpdateValue",
+                            "type": "value",
+                            "value": "let idx = row.tranforms.findIndex(r => r.transform.selectedTransformer && r.transform.selectedTransformer !== r.transform.registeredTransform); value = [idx, row.tranforms[idx].transform.selectedTransformer]"
+                        }
+                    ]
+                }
+            ],
+            "key": "changedTransformRow",
+            "defaultValue": [
+                -1,
+                ""
+            ],
+            "properties": {
+                "triggerHappy": "imageprocessing.parts.transform.NewTransformer"
+            },
+            "type": "hidden",
+            "input": true,
+            "tableView": false
+        },
+        {
             "label": "Tranforms",
             "reorder": true,
             "addAnother": "Add transform",
@@ -110,9 +140,6 @@
                                 "required": true
                             },
                             "key": "selectedTransformer",
-                            "properties": {
-                                "triggerHappy": "imageprocessing.parts.transform.NewTransformer"
-                            },
                             "type": "select",
                             "input": true
                         },
@@ -137,6 +164,7 @@
                         {
                             "label": "registered transform",
                             "key": "registeredTransform",
+                            "defaultValue": "",
                             "type": "hidden",
                             "input": true,
                             "tableView": false
