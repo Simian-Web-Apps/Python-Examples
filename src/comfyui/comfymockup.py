@@ -52,6 +52,12 @@ def process_workflow(meta_data: dict, payload: dict) -> dict:
         # A workflow API file has been selected. Try to process it.
         LOCATIONS["workflow"] = file_paths[0]
 
+        # Ensure the Component config is updated before we create any new components.
+        mode = meta_data.get("mode", "deployed")
+        component.Component._init_config(
+            ["mode", "portalCache"], [mode, internal._using_portal_cache(meta_data)]
+        )
+
         # Recreate the app, but without the File component.
         form = Form(from_file=__file__)
         form.components.pop(-1)
@@ -64,11 +70,6 @@ def process_workflow(meta_data: dict, payload: dict) -> dict:
             payload["updateForm"] = True
             payload["form"] = form
             internal.setCache(meta_data, "formMap", internal.getFormStruct(meta_data, payload))
-
-            mode = meta_data.get("mode", "deployed")
-            component.Component._init_config(
-                ["mode", "portalCache"], [mode, internal._using_portal_cache(meta_data)]
-            )
 
         except Exception as exc:
             utils.addAlert(
