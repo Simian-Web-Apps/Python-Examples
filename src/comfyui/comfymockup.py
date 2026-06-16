@@ -1,3 +1,6 @@
+import logging
+import traceback
+
 from simian.gui import Form, component, utils, internal
 from simian.comfy import convert_api_to_app, LOCATIONS
 from simian.comfy.examples.compositemasked.comfy_app import gui_event as gui_event_app
@@ -62,11 +65,17 @@ def process_workflow(meta_data: dict, payload: dict) -> dict:
             payload["form"] = form
             internal.setCache(meta_data, "formMap", internal.getFormStruct(meta_data, payload))
 
-        except Exception:
+            mode = meta_data.get("mode", "deployed")
+            component.Component._init_config(
+                ["mode", "portalCache"], [mode, internal._using_portal_cache(meta_data)]
+            )
+
+        except Exception as exc:
             utils.addAlert(
                 payload,
                 "Could not create ComfyUI WebApp from JSON file. Does it contain WebApp API nodes?",
                 "danger",
             )
+            logging.debug(traceback.print_tb(exc.__traceback__))
 
     return payload
