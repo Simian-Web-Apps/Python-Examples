@@ -39,6 +39,8 @@ def gui_init(_meta_data: dict) -> dict:
 
 def gui_event(meta_data: dict, payload: dict) -> dict:
     """Process app events."""
+    import imageprocessing.inpainter.inpaint_actions  # Import ensures Image gen actions are available.
+
     Form.eventHandler(
         FileSelectionChange=image_comp.file_selection_change,
         ProcessFiles=process_files,

@@ -200,7 +200,7 @@ class Rotate(ImageAction):
     ]
 
     def get_summary(*args) -> str:
-        return f"Rotated {args[0]:d} degrees"
+        return f"Rotated {args[0]} degrees"
 
     @staticmethod
     def perform_action(image_file: str, target_file: str, *args) -> None:
