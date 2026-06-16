@@ -1,5 +1,6 @@
-from simian.gui import Form, component, utils
+from simian.gui import Form, component, utils, internal
 from simian.comfy import convert_api_to_app, LOCATIONS
+from simian.comfy.examples.compositemasked.comfy_app import gui_event as gui_event_app
 
 
 def gui_init(_meta_data: dict) -> dict:
@@ -24,13 +25,16 @@ def gui_event(meta_data: dict, payload: dict) -> dict:
     return callback(meta_data, payload)
 
 
-def mock_workflow(_meta_data: dict, payload: dict) -> dict:
+def mock_workflow(meta_data: dict, payload: dict) -> dict:
     """RunWorkflow callback - mocked as we cannot guarantee that the correct nodes and hardware are available."""
-    utils.addAlert(
-        payload,
-        "The ComfyUI workflow cannot be run from this app. This is purely an app mockup.",
-        "info",
-    )
+    if "COMFY_SERVER" in meta_data["application_data"]:
+        gui_event_app(meta_data, payload)
+    else:
+        utils.addAlert(
+            payload,
+            "The ComfyUI workflow cannot be run from this app. This is purely an app mockup.",
+            "info",
+        )
     return payload
 
 
@@ -56,6 +60,7 @@ def process_workflow(meta_data: dict, payload: dict) -> dict:
             # Put the updated form in the payload and mark the app to be updated.
             payload["updateForm"] = True
             payload["form"] = form
+            internal.setCache(meta_data, "formMap", internal.getFormStruct(meta_data, payload))
 
         except Exception:
             utils.addAlert(
