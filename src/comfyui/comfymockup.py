@@ -19,14 +19,14 @@ def gui_init(_meta_data: dict) -> dict:
 def gui_event(meta_data: dict, payload: dict) -> dict:
     Form.eventHandler(
         WorkflowUploaded=process_workflow,
-        RunWorkflow=mock_workflow,
+        RunWorkflow=perform_workflow,
     )
     callback = utils.getEventFunction(meta_data, payload)
     return callback(meta_data, payload)
 
 
-def mock_workflow(meta_data: dict, payload: dict) -> dict:
-    """RunWorkflow callback - mocked as we cannot guarantee that the correct nodes and hardware are available."""
+def perform_workflow(meta_data: dict, payload: dict) -> dict:
+    """RunWorkflow callback - mocked when no ComfyUI Server configured, run otherwise."""
     if "COMFY_SERVER" in meta_data["application_data"]:
         gui_event_app(meta_data, payload)
     else:
